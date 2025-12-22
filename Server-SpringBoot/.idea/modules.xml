@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/boot-admin/boot-admin.iml" filepath="$PROJECT_DIR$/boot-admin/boot-admin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bootstrap/bootstrap.iml" filepath="$PROJECT_DIR$/bootstrap/bootstrap.iml" />
+      <module fileurl="file://$PROJECT_DIR$/config/config.iml" filepath="$PROJECT_DIR$/config/config.iml" />
+      <module fileurl="file://$PROJECT_DIR$/generator/generator.iml" filepath="$PROJECT_DIR$/generator/generator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jjj-admin/jjj-admin.iml" filepath="$PROJECT_DIR$/jjj-admin/jjj-admin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jjj-common/jjj-common.iml" filepath="$PROJECT_DIR$/jjj-common/jjj-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jjj-front/jjj-front.iml" filepath="$PROJECT_DIR$/jjj-front/jjj-front.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jjj-job/jjj-job.iml" filepath="$PROJECT_DIR$/jjj-job/jjj-job.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jjj-shop/jjj-shop.iml" filepath="$PROJECT_DIR$/jjj-shop/jjj-shop.iml" />
+    </modules>
+  </component>
+</project>

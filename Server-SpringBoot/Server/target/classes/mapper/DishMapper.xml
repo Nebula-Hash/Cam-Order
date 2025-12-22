@@ -33,6 +33,13 @@
         </foreach>
     </delete>
 
+    <update id="batchUpdateStatus">
+        update dish set status = #{status} where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </update>
+
     <select id="getPageList" resultType="fun.cyhgraph.entity.Dish">
         select * from dish
         <where>

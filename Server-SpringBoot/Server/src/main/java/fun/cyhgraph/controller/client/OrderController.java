@@ -65,7 +65,7 @@ public class OrderController {
      * @return
      */
     @GetMapping("/orderDetail/{id}")
-    public Result<OrderVO> getById(@PathVariable Integer id) {
+    public Result<OrderVO> getById(@PathVariable Long id) {
         log.info("订单id:{}", id);
         OrderVO orderVO = orderService.getById(id);
         return Result.success(orderVO);
@@ -76,7 +76,7 @@ public class OrderController {
      *
      * @param page
      * @param pageSize
-     * @param status   订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
+     * @param status   订单状态 1待付款 2已付款 3部分完成 4已完成 5已取消
      * @return
      */
     @GetMapping("/historyOrders")
@@ -92,7 +92,7 @@ public class OrderController {
      * @return
      */
     @PutMapping("/cancel/{id}")
-    public Result cancel(@PathVariable Integer id) throws Exception {
+    public Result cancel(@PathVariable Long id) throws Exception {
         log.info("用户取消订单，手动取消或者超时，id为：{}", id);
         orderService.userCancelById(id);
         return Result.success();
@@ -105,7 +105,7 @@ public class OrderController {
      * @return
      */
     @PostMapping("/reOrder/{id}")
-    public Result reOrder(@PathVariable Integer id) {
+    public Result reOrder(@PathVariable Long id) {
         log.info("根据订单id再来一单：{}", id);
         orderService.reOrder(id);
         return Result.success();
@@ -118,7 +118,7 @@ public class OrderController {
      * @return
      */
     @GetMapping("/reminder/{id}")
-    public Result reminder(@PathVariable Integer id){
+    public Result reminder(@PathVariable Long id){
         log.info("用户催单，订单id:{}", id);
         orderService.reminder(id);
         return Result.success();

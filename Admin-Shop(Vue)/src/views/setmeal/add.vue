@@ -78,7 +78,8 @@ const init = async () => {
   const { data: res } = await getCategoryPageListAPI({ page: 1, pageSize: 100, type: 2 })
   console.log('分类列表')
   console.log(res.data)
-  categoryList.value = res.data.records
+  // 空数据防护
+  categoryList.value = res.data?.records || []
   console.log('categoryList: ', categoryList.value)
   // 2. 由于当前页面可能是add也可能是update，所以要根据路由参数来判断是否需要dishTable等数据的初始化
   if (route.query.id !== undefined) {
@@ -86,10 +87,12 @@ const init = async () => {
     form.id = route.query.id ? parseInt(route.query.id as string) : 0
     let setmeal = await getSetmealByIdAPI(form.id)
     console.log(setmeal)
-    Object.assign(form, setmeal.data.data)
-    console.log(form)
-    // 顺便把form里面的setmealDishes赋值给dishTable，用于回显
-    dishTable.value = form.setmealDishes
+    if (setmeal.data?.data) {
+      Object.assign(form, setmeal.data.data)
+      console.log(form)
+      // 顺便把form里面的setmealDishes赋值给dishTable，用于回显
+      dishTable.value = form.setmealDishes || []
+    }
   } else {
     console.log('来到新增套餐页面add')
   }

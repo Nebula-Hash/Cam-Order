@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fun.cyhgraph.mapper.EmployeeWindowMapper">
+
+    <insert id="insertBatch">
+        INSERT INTO employee_window (employee_id, window_id, create_time) VALUES
+        <foreach collection="windowIds" item="windowId" separator=",">
+            (#{employeeId}, #{windowId}, NOW())
+        </foreach>
+    </insert>
+
+</mapper>

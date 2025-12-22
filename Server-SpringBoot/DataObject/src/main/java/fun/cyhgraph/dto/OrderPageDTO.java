@@ -18,6 +18,6 @@ public class OrderPageDTO implements Serializable {
     private LocalDateTime beginTime;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime endTime;
-    private Integer userId;
+    private Long userId;
 
 }

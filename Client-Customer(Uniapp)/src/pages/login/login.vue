@@ -18,7 +18,7 @@
           <button class="small_btn" @tap="goRegister">立即注册</button>
         </view>
       </view>
-      <view class="tips">登录/注册即视为你同意《服务条款》和《寒夜外卖隐私协议》</view>
+      <view class="tips">登录/注册即视为你同意《服务条款》和《学食界外卖隐私协议》</view>
     </view>
   </view>
 </template>

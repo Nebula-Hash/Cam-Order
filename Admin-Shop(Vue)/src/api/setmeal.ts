@@ -77,3 +77,17 @@ export const deleteSetmealsAPI = (ids: string) => {
     params: { ids }
   })
 }
+
+/**
+ * 批量修改套餐状态
+ * @param ids 套餐ids
+ * @param status 目标状态 1-起售 0-停售
+ * @returns
+ */
+export const batchUpdateSetmealStatusAPI = (ids: string, status: number) => {
+  return request({
+    url: `/setmeal/status/batch/${status}`,
+    method: 'put',
+    params: { ids }
+  })
+}

@@ -36,4 +36,13 @@ public class GlobalExceptionHandler {
             return Result.error(MessageConstant.UNKNOWN_ERROR);
         }
     }
+
+    /**
+     * 处理所有未捕获的异常
+     */
+    @ExceptionHandler
+    public Result exceptionHandler(Exception ex) {
+        log.error("未捕获的异常：{}", ex.getMessage(), ex);
+        return Result.error(MessageConstant.UNKNOWN_ERROR);
+    }
 }

@@ -13,7 +13,7 @@
       <ul>
         <li>
           <p class="tit">营业额</p>
-          <p class="num">¥ {{ overviewData.turnover }}</p>
+          <p class="num">¥ {{ overviewData.turnover?.toFixed(2) }}</p>
         </li>
         <li>
           <p class="tit">有效订单</p>
@@ -27,7 +27,7 @@
         </li>
         <li>
           <p class="tit">平均客单价</p>
-          <p class="num">¥ {{ overviewData.unitPrice }}</p>
+          <p class="num">¥ {{ overviewData.unitPrice?.toFixed(2) }}</p>
         </li>
         <li>
           <p class="tit">新增用户</p>
@@ -57,5 +57,4 @@ const props = defineProps<{
 const days = computed(() => getday())
 </script>
 
-<style lang="less" scoped>
-</style>
+<style lang="less" scoped></style>

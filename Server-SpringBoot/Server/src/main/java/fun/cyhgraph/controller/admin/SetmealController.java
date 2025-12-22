@@ -73,6 +73,20 @@ public class SetmealController {
     }
 
     /**
+     * 批量修改套餐起售停售状态
+     * @param status 目标状态 1-起售 0-停售
+     * @param ids 套餐id列表
+     * @return
+     */
+    @PutMapping("/status/batch/{status}")
+    @CacheEvict(cacheNames = "setmealCache", allEntries = true)
+    public Result batchUpdateStatus(@PathVariable Integer status, @RequestParam List<Integer> ids){
+        log.info("批量修改套餐状态，status={}，ids={}", status, ids);
+        setmealService.batchUpdateStatus(status, ids);
+        return Result.success();
+    }
+
+    /**
      * 修改套餐
      * @param setmealDTO
      * @return

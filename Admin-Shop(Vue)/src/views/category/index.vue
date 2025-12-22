@@ -1,7 +1,8 @@
 <script setup lang="ts">
 
-import { reactive, ref } from 'vue'
+import { reactive, ref, onMounted } from 'vue'
 import { getCategoryPageListAPI, updateCategoryStatusAPI, deleteCategoryAPI } from '@/api/category'
+import { getWindowListAPI } from '@/api/window'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useRouter } from 'vue-router'
 
@@ -13,16 +14,26 @@ interface category {
   sort: string
   status: string
   updateTime: string
+  windowId: number
+  windowName: string
+}
+
+interface windowItem {
+  id: number
+  name: string
 }
 
 // ------ 数据 ------
 
 // 当前页的分类列表
 const categoryList = ref<category[]>([])
+// 窗口列表
+const windowList = ref<windowItem[]>([])
 // 带查询条件的分页参数
 const pageData = reactive({
   name: '',
   type: '',
+  windowId: '' as string | number,
   page: 1,
   pageSize: 6,
   total: 0
@@ -45,13 +56,24 @@ const options = [
 const init = async () => {
   // 参数解构再传进去，不用传total
   const { data: res } = await getCategoryPageListAPI
-    ({ name: pageData.name, type: pageData.type, page: pageData.page, pageSize: pageData.pageSize })
+    ({ name: pageData.name, type: pageData.type, windowId: pageData.windowId || undefined, page: pageData.page, pageSize: pageData.pageSize })
   console.log(res)
   console.log('分类列表')
   console.log(res.data)
-  categoryList.value = res.data.records
-  pageData.total = res.data.total
+  // 空数据防护
+  categoryList.value = res.data?.records || []
+  pageData.total = res.data?.total || 0
 }
+
+// 获取窗口列表
+const getWindows = async () => {
+  const { data: res } = await getWindowListAPI()
+  windowList.value = res.data || []
+}
+
+onMounted(() => {
+  getWindows()
+})
 
 init()  // 页面初始化/分页查询，写在这里时的生命周期是beforecreated/created的时候
 
@@ -134,6 +156,9 @@ const delete_btn = (row: any) => {
       <el-select size="large" class="input" clearable v-model="pageData.type" placeholder="选择分类类型">
         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
+      <el-select size="large" class="input" clearable v-model="pageData.windowId" placeholder="选择所属窗口">
+        <el-option v-for="item in windowList" :key="item.id" :label="item.name" :value="item.id" />
+      </el-select>
       <el-button size="large" class="btn" round type="success" @click="init()">查询分类</el-button>
       <el-button size="large" class="btn" type="primary" @click="router.push('/category/add')">
         <el-icon style="font-size: 15px; margin-right: 10px;">
@@ -149,6 +174,7 @@ const delete_btn = (row: any) => {
           <span>{{ scope.row.type === 1 ? '菜品分类' : '套餐分类' }}</span>
         </template>
       </el-table-column>
+      <el-table-column prop="windowName" label="所属窗口" align="center" />
       <el-table-column prop="sort" label="排序" align="center" />
       <el-table-column prop="status" label="状态" align="center">
         <template #default="scope">

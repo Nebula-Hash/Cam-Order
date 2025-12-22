@@ -88,9 +88,14 @@ const init = (begin: string, end: string) => {
 // chart1 营业额统计
 const getTurnoverStatisticsData = async (begin: string, end: string) => {
   const { data } = await getTurnoverStatisticsAPI({ begin, end })
+  // 空数据防护
+  if (!data?.data) {
+    console.warn('营业额统计数据为空')
+    return
+  }
   turnoverData.value = {
-    dateList: data.data.dateList.split(','),
-    turnoverList: data.data.turnoverList.split(',')
+    dateList: data.data.dateList?.split(',') || [],
+    turnoverList: data.data.turnoverList?.split(',') || []
   }
   console.log('获取到营业额统计数据：', turnoverData.value)
 }
@@ -98,10 +103,15 @@ const getTurnoverStatisticsData = async (begin: string, end: string) => {
 // chart2 用户统计
 const getUserStatisticsData = async (begin: string, end: string) => {
   const { data: res } = await getUserStatisticsAPI({ begin, end })
+  // 空数据防护
+  if (!res?.data) {
+    console.warn('用户统计数据为空')
+    return
+  }
   userData.value = {
-    dateList: res.data.dateList.split(','),
-    totalUserList: res.data.totalUserList.split(','),
-    newUserList: res.data.newUserList.split(','),
+    dateList: res.data.dateList?.split(',') || [],
+    totalUserList: res.data.totalUserList?.split(',') || [],
+    newUserList: res.data.newUserList?.split(',') || [],
   }
   console.log('获取到用户统计数据：', userData.value)
 }
@@ -109,15 +119,20 @@ const getUserStatisticsData = async (begin: string, end: string) => {
 // chart3 订单统计
 const getOrderStatisticsData = async (begin: string, end: string) => {
   const { data: res } = await getOrderStatisticsAPI({ begin, end })
+  // 空数据防护
+  if (!res?.data) {
+    console.warn('订单统计数据为空')
+    return
+  }
   orderData.value = {
     data: {
-      dateList: res.data.dateList.split(','),
-      orderCountList: res.data.orderCountList.split(','),
-      validOrderCountList: res.data.validOrderCountList.split(','),
+      dateList: res.data.dateList?.split(',') || [],
+      orderCountList: res.data.orderCountList?.split(',') || [],
+      validOrderCountList: res.data.validOrderCountList?.split(',') || [],
     },
-    totalOrderCount: res.data.totalOrderCount,
-    validOrderCount: res.data.validOrderCount,
-    orderCompletionRate: res.data.orderCompletionRate
+    totalOrderCount: res.data.totalOrderCount || 0,
+    validOrderCount: res.data.validOrderCount || 0,
+    orderCompletionRate: res.data.orderCompletionRate || 0
   }
   console.log('获取到订单统计数据：', orderData.value)
 }
@@ -125,9 +140,16 @@ const getOrderStatisticsData = async (begin: string, end: string) => {
 // chart4 销量排名TOP10
 const getTopData = async (begin: string, end: string) => {
   const { data: res } = await getTop10StatisticsAPI({ begin, end })
+  // 空数据防护
+  if (!res?.data) {
+    console.warn('销量Top10数据为空')
+    return
+  }
+  const nameList = res.data.nameList?.split(',').filter(Boolean).reverse() || []
+  const numberList = res.data.numberList?.split(',').filter(Boolean).reverse() || []
   top10Data.value = {
-    nameList: res.data.nameList.split(',').reverse(),
-    numberList: res.data.numberList.split(',').reverse(),
+    nameList,
+    numberList,
   }
   console.log('获取到销量top10统计数据：', top10Data.value)
 }

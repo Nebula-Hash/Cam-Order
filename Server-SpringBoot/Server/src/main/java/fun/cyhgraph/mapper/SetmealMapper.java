@@ -8,6 +8,7 @@ import fun.cyhgraph.entity.Setmeal;
 import fun.cyhgraph.enumeration.OperationType;
 import fun.cyhgraph.vo.DishItemVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,8 @@ public interface SetmealMapper {
 
     @Update("update setmeal set status = IF(status = 1, 0, 1) where id = #{id}")
     void onOff(Integer id);
+
+    void batchUpdateStatus(@Param("status") Integer status, @Param("ids") List<Integer> ids);
 
     @AutoFill(OperationType.UPDATE)
     void update(Setmeal setmeal);

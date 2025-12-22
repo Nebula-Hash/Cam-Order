@@ -14,7 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -106,6 +109,19 @@ public class CartServiceImpl implements CartService {
         return cartMapper.list(Cart.builder().
                 userId(BaseContext.getCurrentId()).
                 build());
+    }
+
+    /**
+     * 按窗口分组获取购物车列表
+     * @return Map<windowId, List<Cart>>
+     */
+    public Map<Integer, List<Cart>> getListGroupByWindow() {
+        List<Cart> cartList = cartMapper.listByUserIdGroupByWindow(BaseContext.getCurrentId());
+        if (cartList == null || cartList.isEmpty()) {
+            return new HashMap<>();
+        }
+        // 按windowId分组
+        return cartList.stream().collect(Collectors.groupingBy(Cart::getWindowId));
     }
 
     /**

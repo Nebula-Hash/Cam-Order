@@ -50,7 +50,7 @@ public class OrderController {
      * @return
      */
     @GetMapping("/details/{id}")
-    public Result<OrderVO> details(@PathVariable Integer id){
+    public Result<OrderVO> details(@PathVariable Long id){
         log.info("根据订单id查询订单详情");
         OrderVO orderVO = orderService.getById(id);
         return Result.success(orderVO);
@@ -93,24 +93,12 @@ public class OrderController {
     }
 
     /**
-     * 派送订单
-     * @param id
-     * @return
-     */
-    @PutMapping("/delivery/{id}")
-    public Result delivery(@PathVariable Integer id){
-        log.info("派送中：{}", id);
-        orderService.delivery(id);
-        return Result.success();
-    }
-
-    /**
      * 完成订单
      * @param id
      * @return
      */
     @PutMapping("/complete/{id}")
-    public Result complete(@PathVariable Integer id){
+    public Result complete(@PathVariable Long id){
         log.info("已完成：{}", id);
         orderService.complete(id);
         return Result.success();

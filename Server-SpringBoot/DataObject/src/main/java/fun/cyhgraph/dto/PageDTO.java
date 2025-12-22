@@ -16,4 +16,5 @@ public class PageDTO implements Serializable {
     private int page;
     private int pageSize;
     private String name;
+    private Integer role; // 员工角色筛选：0-窗口员工 1-窗口管理员 2-超级管理员
 }

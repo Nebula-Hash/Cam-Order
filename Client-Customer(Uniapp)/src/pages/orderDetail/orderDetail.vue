@@ -5,23 +5,15 @@
       <view class="time" v-if="countdownStore.showM <= 0 && countdownStore.showS <= 0">订单已超时</view>
       <view class="time" v-else>
         支付剩余时间
-        <uni-countdown
-          color="#888"
-          :show-day="false"
-          :show-hour="false"
-          :minute="countdownStore.showM"
-          :second="countdownStore.showS"
-        ></uni-countdown>
+        <uni-countdown color="#888" :show-day="false" :show-hour="false" :minute="countdownStore.showM"
+          :second="countdownStore.showS"></uni-countdown>
       </view>
     </view>
     <view class="btn_box">
       <!-- 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消 -->
       <view class="reOrder" v-if="(order.status as number) <= 2" @click="cancelOrder">取消订单</view>
-      <view
-        class="toPay"
-        v-if="order.status === 1 && (countdownStore.showM > 0 || countdownStore.showS > 0)"
-        @click="toPay"
-        >立即支付
+      <view class="toPay" v-if="order.status === 1 && (countdownStore.showM > 0 || countdownStore.showS > 0)"
+        @click="toPay">立即支付
       </view>
       <view class="pushOrder" v-if="order.status === 2" @click="pushOrder">催单</view>
       <view class="reOrder" v-if="order.status === 2 || order.status === 6" @click="reOrder">再来一单</view>
@@ -110,12 +102,12 @@
 
 <script lang="ts" setup>
 import pushMsg from '../../components/message/pushMsg.vue'
-import {ref, reactive} from 'vue'
-import {onLoad} from '@dcloudio/uni-app'
-import {getOrderAPI, cancelOrderAPI, reOrderAPI, urgeOrderAPI, payOrderAPI} from '@/api/order'
-import {cleanCartAPI} from '@/api/cart'
-import {useCountdownStore} from '@/stores/modules/countdown'
-import type {Order, OrderVO} from '@/types/order'
+import { ref, reactive } from 'vue'
+import { onLoad } from '@dcloudio/uni-app'
+import { getOrderAPI, cancelOrderAPI, reOrderAPI, urgeOrderAPI, payOrderAPI } from '@/api/order'
+import { cleanCartAPI } from '@/api/cart'
+import { useCountdownStore } from '@/stores/modules/countdown'
+import type { Order, OrderVO } from '@/types/order'
 
 const childComp: any = ref(null)
 
@@ -164,7 +156,7 @@ const order = reactive<OrderVO>({
 
 onLoad(async (options) => {
   console.log('options', options)
-  order.id = options!.orderId
+  order.id = Number(options!.orderId)
   await getOrderDetail()
 })
 
@@ -269,6 +261,7 @@ const toPay = async () => {
   margin: 20rpx;
   background-color: #fff;
   border-radius: 20rpx;
+
   // 订单状态
   .orderDetail {
     padding: 20rpx 0;
@@ -277,6 +270,7 @@ const toPay = async () => {
     font-weight: bold;
     text-align: center;
   }
+
   .time_box {
     // display: flex;
     // justify-content: center;
@@ -284,6 +278,7 @@ const toPay = async () => {
     font-size: 24rpx;
     color: #333333;
     text-align: center;
+
     .time {
       display: flex;
       justify-content: center;
@@ -292,9 +287,11 @@ const toPay = async () => {
       font-weight: bold;
     }
   }
+
   .btn_box {
     display: flex;
     justify-content: center;
+
     // 再来一单
     .reOrder {
       width: 25%;
@@ -306,6 +303,7 @@ const toPay = async () => {
       color: #333333;
       text-align: center;
     }
+
     // 立即支付
     .toPay,
     .pushOrder {
@@ -320,16 +318,20 @@ const toPay = async () => {
       text-align: center;
     }
   }
+
   // 菜品列表
   .order-type {
     padding: 40rpx 0 10rpx 0;
+
     // 菜品列表的每个元素
     .type_item {
       display: flex;
       margin-bottom: 30rpx;
+
       .dish_img {
         width: 100rpx;
         margin: 0 20rpx 0 32rpx;
+
         .dish_img_url {
           display: block;
           width: 100rpx;
@@ -337,10 +339,12 @@ const toPay = async () => {
           border-radius: 8rpx;
         }
       }
+
       .dish_info {
         position: relative;
         flex: 1;
         margin-right: 20rpx;
+
         // margin: 0 20rpx 20rpx 0;
         // margin-bottom: 200rpx;
         .dish_name {
@@ -348,6 +352,7 @@ const toPay = async () => {
           font-weight: bold;
           color: #20232a;
         }
+
         .dish_flavor {
           font-size: 24rpx;
           color: #818693;
@@ -355,20 +360,24 @@ const toPay = async () => {
           line-height: 30rpx;
           margin-top: 10rpx;
         }
+
         .dish_amount {
           font-size: 24rpx;
           color: #818693;
           height: 30rpx;
           line-height: 30rpx;
           margin-top: 10rpx;
+
           .ico {
             font-size: 24rpx;
           }
+
           .dish_number {
             padding: 10rpx 0;
             font-size: 24rpx;
           }
         }
+
         .dish_price {
           position: absolute;
           right: 20rpx;
@@ -378,6 +387,7 @@ const toPay = async () => {
           color: #e94e3c;
           font-family: DIN, DIN-Medium;
           font-weight: 500;
+
           .ico {
             line-height: 42rpx;
             font-size: 24rpx;
@@ -386,6 +396,7 @@ const toPay = async () => {
       }
     }
   }
+
   // 居中文字
   .text_center {
     text-align: center;
@@ -394,6 +405,7 @@ const toPay = async () => {
     font-weight: bold;
     padding: 20rpx 0;
   }
+
   .word_text {
     display: flex;
     align-items: center;
@@ -401,6 +413,7 @@ const toPay = async () => {
     border-bottom: 1px solid #efefef;
     height: 120rpx;
     line-height: 120rpx;
+
     .word_left {
       width: 50%;
       height: 44rpx;
@@ -411,6 +424,7 @@ const toPay = async () => {
       line-height: 44rpx;
       letter-spacing: 0px;
     }
+
     .word_right {
       width: 50%;
       height: 44rpx;
@@ -423,11 +437,13 @@ const toPay = async () => {
       padding-right: 20rpx;
     }
   }
+
   .all_price {
     position: relative;
     margin: 0 16rpx 0 22rpx;
     height: 120rpx;
     line-height: 120rpx;
+
     .word_right {
       position: absolute;
       height: 44rpx;
@@ -441,12 +457,14 @@ const toPay = async () => {
       right: 28rpx;
     }
   }
+
   .bottom_text {
     display: flex;
     align-items: center;
     margin: 0 20rpx 0 30rpx;
     height: 100rpx;
     line-height: 100rpx;
+
     .text_left {
       width: 30%;
       height: 44rpx;
@@ -457,6 +475,7 @@ const toPay = async () => {
       line-height: 44rpx;
       letter-spacing: 0px;
     }
+
     .text_right {
       width: 70%;
       height: 44rpx;
@@ -472,6 +491,7 @@ const toPay = async () => {
     }
   }
 }
+
 .pop {
   position: absolute;
   left: 50%;
@@ -484,23 +504,27 @@ const toPay = async () => {
   width: 640rpx;
   padding: 30rpx 0;
 }
+
 .title {
   text-align: center;
   font-size: 34rpx;
   font-weight: 500;
   margin-top: 38rpx;
 }
+
 .tip-img {
   margin: 0 auto;
   width: 200rpx;
   height: 200rpx;
   margin-top: 64rpx;
 }
+
 .tip-img image {
   width: 100%;
   height: 100%;
   border-radius: 20px;
 }
+
 .tip-info {
   padding: 0 30rpx;
   font-size: 34rpx;
@@ -509,6 +533,7 @@ const toPay = async () => {
   margin-bottom: 64rpx;
   text-align: center;
 }
+
 .sure {
   width: 100%;
   border-top: 1rpx solid #d1d1d1;

@@ -50,6 +50,7 @@ public class EmployeeController {
                 .id(employee.getId())
                 .account(employee.getAccount())
                 .token(token)
+                .role(employee.getRole())
                 .build();
         return Result.success(employeeLoginVO);
     }

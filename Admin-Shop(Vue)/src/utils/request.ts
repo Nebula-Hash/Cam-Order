@@ -48,12 +48,25 @@ instance.interceptors.response.use(
   // 响应状态码是 4xx,5xx 时触发失败的回调
   (error) => {
     console.dir(error)
-    if (error.response.status === 401) {
-      // 无效的 token (不存在，过期，伪造或者被修改)
-      // token没用了，把 Pinia 中的一切重置为空，并跳转到登录页面(相当于没token的状态)
-      userInfoStore.userInfo = null
-      ElMessage.error('用户身份已过期~')
-      router.push('/login') // js无法获取this.$router，所以要引入router来跳转
+    // 网络错误或后端未响应时 error.response 可能为 undefined
+    if (error.response) {
+      if (error.response.status === 401) {
+        // 无效的 token (不存在，过期，伪造或者被修改)
+        // token没用了，把 Pinia 中的一切重置为空，并跳转到登录页面(相当于没token的状态)
+        userInfoStore.userInfo = null
+        ElMessage.error('用户身份已过期~')
+        router.push('/login') // js无法获取this.$router，所以要引入router来跳转
+      } else if (error.response.status === 404) {
+        ElMessage.error('请求的接口不存在')
+      } else if (error.response.status >= 500) {
+        ElMessage.error('服务器错误，请稍后重试')
+      } else {
+        ElMessage.error(error.response.data?.msg || '请求失败')
+      }
+    } else if (error.code === 'ERR_NETWORK') {
+      ElMessage.error('网络错误，请检查后端服务是否启动')
+    } else {
+      ElMessage.error('未知错误')
     }
     return Promise.reject(error)
   }

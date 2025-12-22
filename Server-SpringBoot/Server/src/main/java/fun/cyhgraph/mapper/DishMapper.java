@@ -7,6 +7,7 @@ import fun.cyhgraph.dto.DishPageDTO;
 import fun.cyhgraph.entity.Dish;
 import fun.cyhgraph.enumeration.OperationType;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -29,6 +30,8 @@ public interface DishMapper {
 
     @Update("update dish set status = IF(status = 0, 1, 0) where id = #{id}")
     void onOff(Integer id);
+
+    void batchUpdateStatus(@Param("status") Integer status, @Param("ids") List<Integer> ids);
 
     List<Dish> getList(Dish dish);
 

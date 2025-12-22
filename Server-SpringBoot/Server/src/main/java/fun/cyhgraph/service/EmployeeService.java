@@ -5,7 +5,10 @@ import fun.cyhgraph.dto.EmployeeFixPwdDTO;
 import fun.cyhgraph.dto.EmployeeLoginDTO;
 import fun.cyhgraph.dto.PageDTO;
 import fun.cyhgraph.entity.Employee;
+import fun.cyhgraph.entity.Window;
 import fun.cyhgraph.result.PageResult;
+
+import java.util.List;
 
 public interface EmployeeService {
     Employee getEmployeeById(Integer id);
@@ -25,4 +28,14 @@ public interface EmployeeService {
     void addEmployee(EmployeeDTO employeeDTO);
 
     void fixPwd(EmployeeFixPwdDTO employeeFixPwdDTO);
+
+    /**
+     * 获取员工管理的窗口列表
+     */
+    List<Window> getEmployeeWindows(Integer employeeId);
+
+    /**
+     * 更新员工管理的窗口
+     */
+    void updateEmployeeWindows(Integer employeeId, List<Integer> windowIds);
 }

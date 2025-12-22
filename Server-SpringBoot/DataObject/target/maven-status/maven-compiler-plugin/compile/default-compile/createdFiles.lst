@@ -35,7 +35,6 @@ fun\cyhgraph\vo\DishOverViewVO.class
 fun\cyhgraph\vo\UserLoginVO$UserLoginVOBuilder.class
 fun\cyhgraph\vo\UserReportVO.class
 fun\cyhgraph\vo\OrderStatisticsVO$OrderStatisticsVOBuilder.class
-fun\cyhgraph\entity\Employee.class
 fun\cyhgraph\dto\UserDTO.class
 fun\cyhgraph\vo\EmployeeLoginVO.class
 fun\cyhgraph\entity\Cart.class

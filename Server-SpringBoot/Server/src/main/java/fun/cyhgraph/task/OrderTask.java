@@ -43,22 +43,22 @@ public class OrderTask {
     }
 
     /**
-     * 处理“派送中”状态的订单
+     * 处理已付款但长时间未取餐的订单
+     * 校园点餐场景：超过24小时未取餐的订单自动完成
      */
     @Scheduled(cron = "0 0 1 * * ?") // 表示每次1:00:00触发
-    public void processDeliveryOrder() {
-        log.info("处理派送中订单：{}", new Date());
-        // 每日凌晨1点，查询正在派送中并且下单时间超过1小时的所有订单
-        // select * from orders where status = 4 and order_time < 当前时间-1小时
-        LocalDateTime time = LocalDateTime.now().plusMinutes(-60);
-        List<Order> ordersList = orderMapper.getByStatusAndOrderTimeLT(Order.DELIVERY_IN_PROGRESS, time);
+    public void processLongPendingOrder() {
+        log.info("处理长时间未取餐订单：{}", new Date());
+        // 每日凌晨1点，查询已付款并且下单时间超过24小时的所有订单
+        LocalDateTime time = LocalDateTime.now().plusHours(-24);
+        List<Order> ordersList = orderMapper.getByStatusAndOrderTimeLT(Order.PAID, time);
         // 将其状态都改为已完成
         if (ordersList != null && !ordersList.isEmpty()) {
             ordersList.forEach(order -> {
                 order.setStatus(Order.COMPLETED);
+                order.setCompleteTime(LocalDateTime.now());
                 orderMapper.update(order);
             });
         }
     }
-
 }

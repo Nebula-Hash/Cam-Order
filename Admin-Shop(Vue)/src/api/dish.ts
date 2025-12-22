@@ -78,3 +78,17 @@ export const deleteDishesAPI = (ids: string) => {
   })
 }
 
+/**
+ * 批量修改菜品状态
+ * @param ids 菜品ids
+ * @param status 目标状态 1-起售 0-停售
+ * @returns
+ */
+export const batchUpdateDishStatusAPI = (ids: string, status: number) => {
+  return request({
+    url: `/dish/status/batch/${status}`,
+    method: 'put',
+    params: { ids }
+  })
+}
+

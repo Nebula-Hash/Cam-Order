@@ -13,8 +13,8 @@ import java.util.List;
 public interface CategoryMapper {
 
     @AutoFill(OperationType.INSERT)
-    @Insert("insert into category (name, type, sort, status, create_user, update_user, create_time, update_time) VALUES " +
-            "(#{name}, #{type}, #{sort}, #{status}, #{createUser}, #{updateUser}, #{createTime}, #{updateTime})")
+    @Insert("insert into category (window_id, name, type, sort, status, create_user, update_user, create_time, update_time) VALUES " +
+            "(#{windowId}, #{name}, #{type}, #{sort}, #{status}, #{createUser}, #{updateUser}, #{createTime}, #{updateTime})")
     void add(Category category);
 
     Page<Category> getPageList(CategoryTypePageDTO categoryTypePageDTO);
@@ -32,9 +32,16 @@ public interface CategoryMapper {
     void onOff(Integer id);
 
     /**
-     * 根据type查询分类，没有就查所有，且只能查有启用的分类
+     * 根据type和windowId查询分类，且只能查有启用的分类
      * @param type
+     * @param windowId
      * @return
      */
-    List<Category> getList(Integer type);
+    List<Category> getList(@Param("type") Integer type, @Param("windowId") Integer windowId);
+
+    /**
+     * 根据窗口ID查询分类列表
+     */
+    @Select("SELECT * FROM category WHERE window_id = #{windowId} ORDER BY sort ASC")
+    List<Category> getByWindowId(Integer windowId);
 }

@@ -21,5 +21,7 @@ public interface DishService {
 
     void onOff(Integer id);
 
+    void batchUpdateStatus(Integer status, List<Integer> ids);
+
     List<DishVO> getDishesWithFlavorById(Dish dish);
 }

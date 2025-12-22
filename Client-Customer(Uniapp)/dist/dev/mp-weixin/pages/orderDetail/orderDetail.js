@@ -67,7 +67,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     });
     common_vendor.onLoad(async (options) => {
       console.log("options", options);
-      order.id = options.orderId;
+      order.id = Number(options.orderId);
       await getOrderDetail();
     });
     const getOrderDetail = async () => {

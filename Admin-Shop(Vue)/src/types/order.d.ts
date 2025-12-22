@@ -6,22 +6,25 @@ export type OrderSubmitVO = Partial<{
   orderTime: Date // 下单时间
 }>
 
-// 订单信息
+// 订单信息（校园点餐模式）
 export type Order = {
   id: number // 订单id
   number: string // 订单号
-  status: number // 订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
+  pickupCode: string // 取餐码
+  status: number // 订单状态 1待付款 2已付款 3部分完成 4已完成 5已取消 6退款中 7已退款
   userId: number // 下单用户id
   addressBookId: number // 地址id
   orderTime: Date // 下单时间
   checkoutTime: Date // 结账时间
+  completeTime: Date // 完成时间
   payMethod: number // 支付方式 1微信，2支付宝
   payStatus: number // 支付状态 0未支付 1已支付 2退款
   amount: number // 实收金额
   remark: string // 备注
   userName: string // 用户名
   phone: string // 手机号
-  address: string // 地址
+  dormitory: string // 宿舍楼号
+  address: string // 地址（兼容旧字段）
   consignee: string // 收货人
   cancelReason: string // 订单取消原因
   rejectionReason: string // 订单拒绝原因

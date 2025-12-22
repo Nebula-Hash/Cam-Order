@@ -43,10 +43,8 @@ const initChart = () => {
       type: 'category',
       boundaryGap: false,
       axisLabel: {
-        textStyle: {
-          color: '#666',
-          fontSize: '12px',
-        },
+        color: '#666',
+        fontSize: 12,
       },
       axisLine: {
         lineStyle: {
@@ -60,10 +58,8 @@ const initChart = () => {
       type: 'value',
       min: 0,
       axisLabel: {
-        textStyle: {
-          color: '#666',
-          fontSize: '12px',
-        },
+        color: '#666',
+        fontSize: 12,
       },
     },
     legend: {
@@ -86,21 +82,19 @@ const initChart = () => {
         showSymbol: false,
         symbolSize: 10,
         itemStyle: {
-          normal: {
-            color: '#00ccff',
-            lineStyle: {
-              color: '#00ccff',
-            },
-          },
-          emphasis: {
+          color: '#00ccff',
+        },
+        lineStyle: {
+          color: '#00ccff',
+        },
+        emphasis: {
+          itemStyle: {
             color: '#fff',
             borderWidth: 5,
             borderColor: '#00ccff',
           },
         },
         areaStyle: {
-          // opacity: 0.5,
-          // 从上到下渐变，(0,0)是上部，(0,1)是下部
           color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
             {
               offset: 0,
@@ -123,10 +117,10 @@ const initChart = () => {
 
 // Watch for changes in turnoverdata and re-render the chart
 watch(() => props.turnoverdata, (newVal) => {
-    if (newVal) {
-      initChart();
-    }
-  },
+  if (newVal) {
+    initChart();
+  }
+},
   { immediate: true }
 );
 
@@ -148,25 +142,25 @@ onMounted(() => {
   justify-content: center;
   margin-top: 10px;
 
-    li {
-        position: relative;
-        padding-left: 10px;
-        /* 留出位置给红线 */
-      }
-    
-      li::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 50%;
-        /* 红线垂直居中 */
-        transform: translateY(-50%);
-        /* 红线垂直居中 */
-        width: 5px;
-        /* 红线宽度 */
-        height: 2px;
-        /* 红线高度 */
-        background-color: red;
-      }
+  li {
+    position: relative;
+    padding-left: 10px;
+    /* 留出位置给红线 */
+  }
+
+  li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    /* 红线垂直居中 */
+    transform: translateY(-50%);
+    /* 红线垂直居中 */
+    width: 5px;
+    /* 红线宽度 */
+    height: 2px;
+    /* 红线高度 */
+    background-color: red;
+  }
 }
 </style>

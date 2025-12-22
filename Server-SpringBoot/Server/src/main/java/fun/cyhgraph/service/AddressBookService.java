@@ -7,13 +7,15 @@ import java.util.List;
 public interface AddressBookService {
     void addAddress(AddressBook addressBook);
 
-    List<AddressBook> list(AddressBook addressBook);
+    List<AddressBook> list(Long userId);
 
     void updateAddress(AddressBook addressBook);
 
-    AddressBook getById(Integer id);
+    AddressBook getById(Long id);
 
-    void setDefault(AddressBook addressBook);
+    void setDefault(Long userId, Long addressId);
 
-    void deleteById(Integer id);
+    void deleteById(Long id);
+
+    AddressBook getDefault(Long userId);
 }

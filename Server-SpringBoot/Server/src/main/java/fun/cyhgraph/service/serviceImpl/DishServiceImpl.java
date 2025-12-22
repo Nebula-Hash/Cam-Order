@@ -140,6 +140,15 @@ public class DishServiceImpl implements DishService {
     }
 
     /**
+     * 批量修改菜品起售停售状态
+     * @param status 目标状态
+     * @param ids 菜品id列表
+     */
+    public void batchUpdateStatus(Integer status, List<Integer> ids) {
+        dishMapper.batchUpdateStatus(status, ids);
+    }
+
+    /**
      * 获取对应分类下的所有菜品，包括对应口味
      * @param dish
      * @return

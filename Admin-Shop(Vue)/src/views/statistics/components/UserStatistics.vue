@@ -46,10 +46,8 @@ const initChart = () => {
       type: 'category',
       boundaryGap: false,
       axisLabel: {
-        textStyle: {
-          color: '#666',
-          fontSize: '12px',
-        },
+        color: '#666',
+        fontSize: 12,
       },
       axisLine: {
         lineStyle: {
@@ -64,10 +62,8 @@ const initChart = () => {
         type: 'value',
         min: 0,
         axisLabel: {
-          textStyle: {
-            color: '#666',
-            fontSize: '12px',
-          },
+          color: '#666',
+          fontSize: 12,
         },
       },
     ],
@@ -91,32 +87,18 @@ const initChart = () => {
         showSymbol: false,
         symbolSize: 10,
         itemStyle: {
-          normal: {
-            color: '#FFD000',
-            lineStyle: {
-              color: '#FFD000',
-            },
-          },
-          emphasis: {
+          color: '#FFD000',
+        },
+        lineStyle: {
+          color: '#FFD000',
+        },
+        emphasis: {
+          itemStyle: {
             color: '#fff',
             borderWidth: 5,
             borderColor: '#FFC100',
           },
         },
-        // areaStyle: {
-        //   // opacity: 0.5,
-        //   // 从上到下渐变，(0,0)是上部，(0,1)是下部
-        //   color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-        //     {
-        //       offset: 0,
-        //       color: 'rgba(255, 221, 0, 1)'
-        //     },
-        //     {
-        //       offset: 1,
-        //       color: 'rgba(255, 221, 0, 0)'
-        //     }
-        //   ])
-        // },
         data: props.userdata.totalUserList,
       },
       {
@@ -126,21 +108,19 @@ const initChart = () => {
         showSymbol: false,
         symbolSize: 10,
         itemStyle: {
-          normal: {
-            color: '#FD7F7F',
-            lineStyle: {
-              color: '#FD7F7F',
-            },
-          },
-          emphasis: {
+          color: '#FD7F7F',
+        },
+        lineStyle: {
+          color: '#FD7F7F',
+        },
+        emphasis: {
+          itemStyle: {
             color: '#fff',
             borderWidth: 5,
             borderColor: '#FD7F7F',
           },
         },
         areaStyle: {
-          // opacity: 0.5,
-          // 从上到下渐变，(0,0)是上部，(0,1)是下部
           color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
             {
               offset: 0,

@@ -12,13 +12,13 @@ public interface OrderService {
 
     Integer unPayOrderCount();
 
-    OrderVO getById(Integer id);
+    OrderVO getById(Long id);
 
     PageResult userPage(int page, int pageSize, Integer status);
 
-    void userCancelById(Integer id) throws Exception;
+    void userCancelById(Long id) throws Exception;
 
-    void reOrder(Integer id);
+    void reOrder(Long id);
 
     OrderPaymentVO payment(OrderPaymentDTO orderPaymentDTO);
 
@@ -32,9 +32,7 @@ public interface OrderService {
 
     void cancel(OrderCancelDTO orderCancelDTO);
 
-    void delivery(Integer id);
+    void complete(Long id);
 
-    void complete(Integer id);
-
-    void reminder(Integer id);
+    void reminder(Long id);
 }

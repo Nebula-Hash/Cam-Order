@@ -43,12 +43,22 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     /**
-     * 获取所有分类列表
+     * 根据类型和窗口ID查询分类列表
+     * @param type 分类类型
+     * @param windowId 窗口ID（可为null，查询所有窗口）
+     * @return
+     */
+    public List<Category> getList(Integer type, Integer windowId) {
+        return categoryMapper.getList(type, windowId);
+    }
+
+    /**
+     * 根据类型查询所有分类（兼容旧接口）
      * @return
      */
     public List<Category> getList(Integer type) {
-        List<Category> categoryList = categoryMapper.getList(type);
-        return categoryList;
+        // 不传windowId时查询所有窗口的分类
+        return categoryMapper.getList(type, null);
     }
 
     /**

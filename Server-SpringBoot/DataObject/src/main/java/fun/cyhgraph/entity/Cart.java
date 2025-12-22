@@ -18,6 +18,7 @@ public class Cart implements Serializable {
     private Integer id;
     private String name;
     private Integer userId;
+    private Integer windowId;    // 窗口ID
     private Integer dishId;
     private Integer setmealId;
     private String dishFlavor;

@@ -78,6 +78,21 @@ public class DishController {
     }
 
     /**
+     * 批量修改菜品起售停售状态
+     * @param status 目标状态 1-起售 0-停售
+     * @param ids 菜品id列表
+     * @return
+     */
+    @PutMapping("/status/batch/{status}")
+    public Result batchUpdateStatus(@PathVariable Integer status, @RequestParam List<Integer> ids){
+        log.info("批量修改菜品状态，status={}，ids={}", status, ids);
+        dishService.batchUpdateStatus(status, ids);
+        // 将所有的菜品缓存数据清理掉，所有以dish_开头的key
+        cleanCache("dish_*");
+        return Result.success();
+    }
+
+    /**
      * 更新菜品以及对应口味
      * @param dishDTO
      * @return

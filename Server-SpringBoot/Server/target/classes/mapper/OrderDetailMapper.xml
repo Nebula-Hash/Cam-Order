@@ -3,13 +3,15 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="fun.cyhgraph.mapper.OrderDetailMapper">
 
+    <!-- 批量插入订单详情（校园点餐系统） -->
     <insert id="insertBatch">
         insert into order_detail
-        (name, order_id, dish_id, setmeal_id, dish_flavor, number, amount, pic)
+        (order_id, order_sub_id, dish_id, setmeal_id, name, pic, dish_flavor, number, amount)
         values
         <foreach collection="orderDetailList" item="od" separator=",">
-            (#{od.name},#{od.orderId},#{od.dishId},#{od.setmealId},#{od.dishFlavor},
-            #{od.number},#{od.amount},#{od.pic})
+            (#{od.orderId}, #{od.orderSubId}, #{od.dishId}, #{od.setmealId}, #{od.name}, 
+             #{od.pic}, #{od.dishFlavor}, #{od.number}, #{od.amount})
         </foreach>
     </insert>
+
 </mapper>

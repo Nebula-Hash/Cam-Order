@@ -16,9 +16,9 @@ import type { Order, OrderVO } from '@/types/order'
 import { ElMessage } from 'element-plus'
 
 type OrderStatics = {
-  toBeConfirmed: number
-  confirmed: number
-  deliveryInProgress: number
+  pendingPayment: number
+  paid: number
+  completed: number
 }
 
 const defaultActivity = ref(0)
@@ -59,24 +59,22 @@ const cancelrReasonList = reactive([
   { value: 4, label: '客户电话取消', },
   { value: 0, label: '自定义原因', },
 ])
-// 订单所有状态列表
+// 订单所有状态列表（校园点餐模式）
 const orderList = reactive([
   { label: '全部订单', value: 0, },
   { label: '待付款', value: 1, },
-  { label: '待接单', value: 2, },
-  { label: '待派送', value: 3, },
-  { label: '派送中', value: 4, },
-  { label: '已完成', value: 5, },
-  { label: '已取消', value: 6, },
+  { label: '已付款', value: 2, },
+  { label: '部分完成', value: 3, },
+  { label: '已完成', value: 4, },
+  { label: '已取消', value: 5, },
 ])
-// tab栏订单状态列表
+// tab栏订单状态列表（校园点餐模式）
 const changedOrderList = reactive([
   { label: '全部订单', value: 0 },
-  { label: '待接单', value: 2, num: orderStatics.value?.toBeConfirmed },
-  { label: '待派送', value: 3, num: orderStatics.value?.confirmed },
-  { label: '派送中', value: 4, num: orderStatics.value?.deliveryInProgress },
-  { label: '已完成', value: 5 },
-  { label: '已取消', value: 6 },
+  { label: '待付款', value: 1, num: orderStatics.value?.pendingPayment },
+  { label: '已付款', value: 2, num: orderStatics.value?.paid },
+  { label: '已完成', value: 4 },
+  { label: '已取消', value: 5 },
 ])
 
 const activeIndex = ref(0)
@@ -84,9 +82,8 @@ const activeIndex = ref(0)
 // 监视订单数量变化
 watch(orderStatics, (newValue) => {
   console.log('watch订单数量变化：', newValue)
-  changedOrderList[1].num = newValue && newValue.toBeConfirmed
-  changedOrderList[2].num = newValue && newValue.confirmed
-  changedOrderList[3].num = newValue && newValue.deliveryInProgress
+  changedOrderList[1].num = newValue && newValue.pendingPayment
+  changedOrderList[2].num = newValue && newValue.paid
 })
 
 const tabChange = (index: number) => {
@@ -287,17 +284,19 @@ const getOrderType = (row: any) => {
   if (row.status === 1) {
     return '待付款'
   } else if (row.status === 2) {
-    return '待接单'
+    return '已付款'
   } else if (row.status === 3) {
-    return '待派送'
+    return '部分完成'
   } else if (row.status === 4) {
-    return '派送中'
-  } else if (row.status === 5) {
     return '已完成'
-  } else if (row.status === 6) {
+  } else if (row.status === 5) {
     return '已取消'
+  } else if (row.status === 6) {
+    return '退款中'
+  } else if (row.status === 7) {
+    return '已退款'
   } else {
-    return '退款'
+    return '未知'
   }
 }
 
@@ -345,68 +344,50 @@ onMounted(async () => {
       </div>
       <el-table v-if="tableData.length" :data="tableData" stripe class="tableBox">
         <el-table-column key="number" prop="number" label="订单号" />
-        <el-table-column v-if="[2, 3, 4].includes(orderStatus)" key="orderDishes" prop="orderDishes" label="订单菜品" />
+        <el-table-column key="pickupCode" prop="pickupCode" label="取餐码" width="100px" align="center">
+          <template #default="scope">
+            <el-tag type="warning" size="large" effect="dark">{{ scope.row.pickupCode || '-' }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column v-if="[2].includes(orderStatus)" key="orderDishes" prop="orderDishes" label="订单菜品" />
         <el-table-column v-if="[0].includes(orderStatus)" key="status" prop="订单状态" label="订单状态">
           <template v-slot="{ row }">
             <span>{{ getOrderType(row) }}</span>
           </template>
         </el-table-column>
-        <el-table-column v-if="[0, 5, 6].includes(orderStatus)" key="consignee" prop="consignee" label="用户名"
+        <el-table-column v-if="[0, 4, 5].includes(orderStatus)" key="consignee" prop="consignee" label="用户名"
           show-overflow-tooltip />
-        <el-table-column v-if="[0, 5, 6].includes(orderStatus)" key="phone" prop="phone" label="手机号" />
-        <el-table-column v-if="[0, 2, 3, 4, 5, 6].includes(orderStatus)" key="address" prop="address" label="地址"
-          :class-name="orderStatus === 6 ? 'address' : ''" />
-        <el-table-column v-if="[0, 6].includes(orderStatus)" key="orderTime" prop="orderTime" label="下单时间"
+        <el-table-column v-if="[0, 4, 5].includes(orderStatus)" key="phone" prop="phone" label="手机号" />
+        <el-table-column v-if="[0, 2, 4, 5].includes(orderStatus)" key="dormitory" prop="dormitory" label="宿舍楼"
+          :class-name="orderStatus === 5 ? 'address' : ''" />
+        <el-table-column v-if="[0, 5].includes(orderStatus)" key="orderTime" prop="orderTime" label="下单时间"
           class-name="orderTime" min-width="110" />
-        <el-table-column v-if="[6].includes(orderStatus)" key="cancelTime" prop="cancelTime" class-name="cancelTime"
+        <el-table-column v-if="[5].includes(orderStatus)" key="cancelTime" prop="cancelTime" class-name="cancelTime"
           label="取消时间" min-width="110" />
-        <el-table-column v-if="[6].includes(orderStatus)" key="cancelReason" prop="cancelReason" label="取消原因"
-          class-name="cancelReason" :min-width="[6].includes(orderStatus) ? 80 : 'auto'" />
-        <el-table-column v-if="[5].includes(orderStatus)" key="deliveryTime" prop="deliveryTime" label="送达时间" />
-        <el-table-column v-if="[2, 3, 4].includes(orderStatus)" key="estimatedDeliveryTime" prop="estimatedDeliveryTime"
-          label="预计送达时间" min-width="110" align="center" />
-        <el-table-column v-if="[0, 2, 5].includes(orderStatus)" key="amount" prop="amount" label="实收金额" align="center">
+        <el-table-column v-if="[5].includes(orderStatus)" key="cancelReason" prop="cancelReason" label="取消原因"
+          class-name="cancelReason" :min-width="[5].includes(orderStatus) ? 80 : 'auto'" />
+        <el-table-column v-if="[4].includes(orderStatus)" key="completeTime" prop="completeTime" label="完成时间" />
+        <el-table-column v-if="[0, 2, 4].includes(orderStatus)" key="amount" prop="amount" label="实收金额" align="center">
           <template v-slot="{ row }">
             <span>￥{{ (row.amount.toFixed(2) * 100) / 100 }}</span>
           </template>
         </el-table-column>
-        <el-table-column v-if="[2, 3, 4, 5].includes(orderStatus)" key="remark" prop="remark" label="备注"
-          align="center" />
-        <el-table-column v-if="[2, 3, 4].includes(orderStatus)" key="tablewareNumber" prop="tablewareNumber"
-          label="餐具数量" align="center" min-width="80">
-          <template #default="scope">
-            {{ scope.row.tablewareNumber === -1 ? '无需餐具' : scope.row.tablewareNumber === 0 ? '按餐量提供' :
-            scope.row.tablewareNumber }}
-          </template>
-        </el-table-column>
+        <el-table-column v-if="[2, 4].includes(orderStatus)" key="remark" prop="remark" label="备注" align="center" />
         <el-table-column prop="btn" label="操作" align="center" width="190px"
-          :class-name="orderStatus === 0 ? 'operate' : 'otherOperate'" :min-width="[2, 3, 4].includes(orderStatus)
+          :class-name="orderStatus === 0 ? 'operate' : 'otherOperate'" :min-width="[2].includes(orderStatus)
             ? 130 : [0].includes(orderStatus) ? 140 : 'auto'">
           <template #default="scope">
 
             <div class="btn_box">
               <div class="before">
                 <el-button v-if="scope.row.status === 2" type="primary" link
-                  @click="orderAccept(scope.row), (isTableOperateBtn = true)">
-                  接单
-                </el-button>
-                <el-button v-if="scope.row.status === 3" type="primary" link
-                  @click="deliveryOrComplete(3, scope.row.id)">
-                  派送
-                </el-button>
-                <el-button v-if="scope.row.status === 4" type="primary" link
-                  @click="deliveryOrComplete(4, scope.row.id)">
-                  完成
+                  @click="deliveryOrComplete(2, scope.row.id)">
+                  完成取餐
                 </el-button>
               </div>
               <el-divider direction="vertical" />
               <div class="middle">
-                <el-button v-if="scope.row.status === 2" type="danger" link
-                  @click="orderReject(scope.row), (isTableOperateBtn = true)">
-                  拒单
-                </el-button>
-                <el-button v-if="[1, 3, 4, 5].includes(scope.row.status)" type="danger" link
-                  @click="cancelOrder(scope.row)">
+                <el-button v-if="[1, 2].includes(scope.row.status)" type="danger" link @click="cancelOrder(scope.row)">
                   取消
                 </el-button>
               </div>
@@ -439,11 +420,17 @@ onMounted(async () => {
                 {{ diaForm!.number }}
               </div>
             </div>
+            <div style="display: inline-block; margin-left: 20px;">
+              <label style="font-size: 16px">取餐码：</label>
+              <el-tag type="warning" size="large" effect="dark" style="font-size: 18px; padding: 8px 16px;">
+                {{ diaForm!.pickupCode || '-' }}
+              </el-tag>
+            </div>
             <div style="display: inline-block" class="order-status"
-              :class="{ status3: [3, 4].includes(dialogOrderStatus) }">
+              :class="{ status3: [2].includes(dialogOrderStatus) }">
               {{
-              orderList.filter((item) => item.value === dialogOrderStatus)[0]
-              .label
+                orderList.filter((item) => item.value === dialogOrderStatus)[0]
+                  ?.label || '未知'
               }}
             </div>
           </div>
@@ -461,28 +448,22 @@ onMounted(async () => {
                 <label>手机号：</label>
                 <span>{{ diaForm!.phone }}</span>
               </div>
-              <div v-if="[2, 3, 4, 5].includes(dialogOrderStatus)" class="user-getTime">
-                <label>{{
-                  dialogOrderStatus === 5 ? '送达时间：' : '预计送达时间：'
-                  }}</label>
-                <span>{{
-                  dialogOrderStatus === 5
-                  ? diaForm!.deliveryTime
-                  : diaForm!.estimatedDeliveryTime
-                  }}</span>
+              <div v-if="[4].includes(dialogOrderStatus)" class="user-getTime">
+                <label>完成时间：</label>
+                <span>{{ diaForm!.completeTime }}</span>
               </div>
               <div class="user-address">
-                <label>地址：</label>
-                <span>{{ diaForm!.address }}</span>
+                <label>宿舍楼：</label>
+                <span>{{ diaForm!.dormitory }}</span>
               </div>
             </div>
-            <div class="user-remark" :class="{ orderCancel: dialogOrderStatus === 6 }">
-              <div>{{ dialogOrderStatus === 6 ? '取消原因' : '备注' }}</div>
+            <div class="user-remark" :class="{ orderCancel: dialogOrderStatus === 5 }">
+              <div>{{ dialogOrderStatus === 5 ? '取消原因' : '备注' }}</div>
               <span>{{
-                dialogOrderStatus === 6
-                ? diaForm!.cancelReason || diaForm!.rejectionReason
-                : diaForm!.remark
-                }}</span>
+                dialogOrderStatus === 5
+                  ? diaForm!.cancelReason || diaForm!.rejectionReason
+                  : diaForm!.remark
+              }}</span>
             </div>
           </div>
 
@@ -499,8 +480,8 @@ onMounted(async () => {
             </div>
             <div class="dish-all-amount">
               <label>菜品小计</label>
-              <span>￥{{ diaForm && diaForm.amount && diaForm?.packAmount ?
-                (diaForm!.amount - 6 - diaForm!.packAmount).toFixed(2) : 0
+              <span>￥{{ diaForm && diaForm.amount !== undefined ?
+                (diaForm!.amount - (diaForm?.packAmount || 0)).toFixed(2) : 0
                 }}</span>
             </div>
           </div>
@@ -512,23 +493,18 @@ onMounted(async () => {
             <div class="amount-list">
               <div class="dish-amount">
                 <span class="amount-name">菜品小计：</span>
-                <span class="amount-price">￥{{ (diaForm && typeof diaForm.amount === 'number' && typeof
-                  diaForm.packAmount === 'number') ? (((diaForm.amount - 6 - diaForm.packAmount) * 100) /
-                  100).toFixed(2) : 0 }}</span>
-              </div>
-              <div class="send-amount">
-                <span class="amount-name">派送费：</span>
-                <span class="amount-price">￥{{ 6 }}</span>
+                <span class="amount-price">￥{{ (diaForm && typeof diaForm.amount === 'number') ?
+                  ((diaForm.amount - (diaForm.packAmount || 0)) * 100 / 100).toFixed(2) : 0 }}</span>
               </div>
               <div class="package-amount">
                 <span class="amount-name">打包费：</span>
-                <span class="amount-price">￥{{ diaForm && diaForm.amount && diaForm.packAmount ?
-                  ((diaForm!.packAmount * 100) / 100).toFixed(2) : '' }}</span>
+                <span class="amount-price">￥{{ diaForm && diaForm.packAmount !== undefined ?
+                  (diaForm!.packAmount).toFixed(2) : '0.00' }}</span>
               </div>
               <div class="all-amount">
                 <span class="amount-name">合计：</span>
-                <span class="amount-price">￥{{ diaForm && diaForm.amount && diaForm.packAmount ?
-                  ((diaForm!.amount * 100) / 100).toFixed(2) : '' }}</span>
+                <span class="amount-price">￥{{ diaForm && diaForm.amount ?
+                  (diaForm!.amount).toFixed(2) : '0.00' }}</span>
               </div>
               <div class="pay-type">
                 <span class="pay-name">支付渠道：</span>
@@ -545,20 +521,12 @@ onMounted(async () => {
         </div>
       </el-scrollbar>
       <template #footer>
-        <span v-if="dialogOrderStatus !== 6" class="dialog-footer">
-          <el-checkbox v-if="dialogOrderStatus === 2 && orderStatus === 2" v-model="isAutoNext">处理完自动跳转下一条</el-checkbox>
+        <span v-if="dialogOrderStatus !== 5" class="dialog-footer">
           <div>
-            <el-button v-if="dialogOrderStatus === 2" @click="orderReject(my_row), (isTableOperateBtn = false)">拒
-              单</el-button>
+            <el-button @click="dialogVisible = false">返 回</el-button>
             <el-button v-if="dialogOrderStatus === 2" type="primary"
-              @click="orderAccept(my_row), (isTableOperateBtn = false)">接 单</el-button>
-
-            <el-button v-if="[1, 3, 4, 5].includes(dialogOrderStatus)" @click="dialogVisible = false">返 回</el-button>
-            <el-button v-if="dialogOrderStatus === 3" type="primary" @click="deliveryOrComplete(3, my_row!.id)">派
-              送</el-button>
-            <el-button v-if="dialogOrderStatus === 4" type="primary" @click="deliveryOrComplete(4, my_row!.id)">完
-              成</el-button>
-            <el-button v-if="[1].includes(dialogOrderStatus)" type="primary"
+              @click="deliveryOrComplete(2, my_row!.id)">完成取餐</el-button>
+            <el-button v-if="[1, 2].includes(dialogOrderStatus)" type="danger"
               @click="cancelOrder(my_row)">取消订单</el-button>
           </div>
         </span>

@@ -86,6 +86,15 @@ public class SetmealServiceImpl implements SetmealService {
     }
 
     /**
+     * 批量修改套餐起售停售状态
+     * @param status 目标状态
+     * @param ids 套餐id列表
+     */
+    public void batchUpdateStatus(Integer status, List<Integer> ids) {
+        setmealMapper.batchUpdateStatus(status, ids);
+    }
+
+    /**
      * 修改套餐
      * @param setmealDTO
      */

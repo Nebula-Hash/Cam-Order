@@ -19,6 +19,8 @@ public interface SetmealService {
 
     void onOff(Integer id);
 
+    void batchUpdateStatus(Integer status, List<Integer> ids);
+
     void update(SetmealDTO setmealDTO);
 
     void deleteBatch(List<Integer> ids);

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { reactive, ref } from 'vue'
-import { getSetmealPageListAPI, updateSetmealStatusAPI, deleteSetmealsAPI } from '@/api/setmeal'
+import { getSetmealPageListAPI, updateSetmealStatusAPI, deleteSetmealsAPI, batchUpdateSetmealStatusAPI } from '@/api/setmeal'
 import { getCategoryPageListAPI } from '@/api/category'
 import { ElMessage, ElMessageBox, ElTable } from 'element-plus'
 import { useRouter } from 'vue-router'
@@ -59,7 +59,8 @@ const init = async () => {
   const { data: res_category } = await getCategoryPageListAPI({ page: 1, pageSize: 100, type: 2 })
   console.log('分类列表')
   console.log(res_category.data)
-  categoryList.value = res_category.data.records
+  // 空数据防护
+  categoryList.value = res_category.data?.records || []
   console.log('categoryList: ', categoryList.value)
 }
 // 刷新页面数据
@@ -67,8 +68,9 @@ const showPageList = async () => {
   const { data: res } = await getSetmealPageListAPI(pageData)
   console.log('套餐列表')
   console.log(res.data)
-  setmealList.value = res.data.records
-  total.value = res.data.total
+  // 空数据防护
+  setmealList.value = res.data?.records || []
+  total.value = res.data?.total || 0
 }
 init() // 页面初始化，写在这里时的生命周期是beforecreated/created的时候
 showPageList() // 页面一开始就要展示分页套餐列表
@@ -120,6 +122,56 @@ const change_btn = async (row: any) => {
     type: 'success',
     message: '修改成功',
   })
+}
+
+// 获取选中的ids
+const getSelectedIds = () => {
+  if (multiSelection.value.length === 0) {
+    return null
+  }
+  return multiSelection.value.map(item => item.id).join(',')
+}
+
+// 批量操作处理
+const handleBatchCommand = (command: string) => {
+  if (multiSelection.value.length === 0) {
+    ElMessage({ type: 'warning', message: '请先选择要操作的套餐' })
+    return
+  }
+
+  if (command === 'delete') {
+    deleteBatch()
+  } else if (command === 'start') {
+    batchUpdateStatus(1)
+  } else if (command === 'stop') {
+    batchUpdateStatus(0)
+  }
+}
+
+// 批量修改状态
+const batchUpdateStatus = (status: number) => {
+  const ids = getSelectedIds()
+  if (!ids) return
+
+  const statusText = status === 1 ? '起售' : '停售'
+  ElMessageBox.confirm(
+    `确定要批量${statusText}选中的套餐吗？`,
+    '提示',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    }
+  )
+    .then(async () => {
+      const res = await batchUpdateSetmealStatusAPI(ids, status)
+      if (res.data.code !== 0) return
+      showPageList()
+      ElMessage({ type: 'success', message: `批量${statusText}成功` })
+    })
+    .catch(() => {
+      ElMessage({ type: 'info', message: '已取消操作' })
+    })
 }
 
 // 删除套餐
@@ -190,7 +242,18 @@ const deleteBatch = (row?: any) => {
         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
       <el-button size="large" class="btn" round type="success" @click="showPageList()">查询套餐</el-button>
-      <el-button size="large" class="btn" round type="danger" @click="deleteBatch()">批量删除</el-button>
+      <el-dropdown @command="handleBatchCommand">
+        <el-button size="large" class="btn" round type="warning">
+          批量操作<el-icon class="el-icon--right"><arrow-down /></el-icon>
+        </el-button>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item command="start">批量起售</el-dropdown-item>
+            <el-dropdown-item command="stop">批量停售</el-dropdown-item>
+            <el-dropdown-item command="delete" divided>批量删除</el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
       <el-button size="large" class="btn" type="primary" @click="to_add_update()">
         <el-icon style="font-size: 15px; margin-right: 10px;">
           <Plus />
@@ -220,7 +283,7 @@ const deleteBatch = (row?: any) => {
         <!-- scope 的父组件是 el-table -->
         <template #default="scope">
           <!-- 遍历categoryList，找到categoryId对应的name   ?.防止找不到对应关系而报错 -->
-          {{ categoryList.find(item => item.id === scope.row.categoryId)?.name }}
+          {{categoryList.find(item => item.id === scope.row.categoryId)?.name}}
         </template>
       </el-table-column>
       <el-table-column prop="updateTime" label="上次操作时间" width="180px" align="center" />

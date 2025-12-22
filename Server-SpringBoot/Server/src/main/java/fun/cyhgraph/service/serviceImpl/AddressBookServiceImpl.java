@@ -21,18 +21,18 @@ public class AddressBookServiceImpl implements AddressBookService {
      */
     public void addAddress(AddressBook addressBook) {
         // 要先知道是哪个用户要新增地址，并且刚开始无法设置默认地址，需要在其他前端页面设置
-        addressBook.setUserId(BaseContext.getCurrentId());
+        addressBook.setUserId(BaseContext.getCurrentId().longValue());
         addressBook.setIsDefault(0);
         addressBookMapper.insert(addressBook);
     }
 
     /**
-     * 条件查询用户地址
-     * @param addressBook
+     * 查询用户地址列表
+     * @param userId
      * @return
      */
-    public List<AddressBook> list(AddressBook addressBook) {
-        return addressBookMapper.getUserAddress(addressBook);
+    public List<AddressBook> list(Long userId) {
+        return addressBookMapper.listByUserId(userId);
     }
 
     /**
@@ -40,7 +40,7 @@ public class AddressBookServiceImpl implements AddressBookService {
      * @param addressBook
      */
     public void updateAddress(AddressBook addressBook) {
-        addressBookMapper.udpate(addressBook);
+        addressBookMapper.update(addressBook);
     }
 
     /**
@@ -48,30 +48,36 @@ public class AddressBookServiceImpl implements AddressBookService {
      * @param id
      * @return
      */
-    public AddressBook getById(Integer id) {
+    public AddressBook getById(Long id) {
         return addressBookMapper.getById(id);
     }
 
     /**
      * 设置默认地址
-     * @param addressBook
+     * @param userId
+     * @param addressId
      */
-    public void setDefault(AddressBook addressBook) {
+    public void setDefault(Long userId, Long addressId) {
         // 1、先把当前用户所有地址都设置成非默认地址
-        addressBook.setIsDefault(0);
-        addressBook.setUserId(BaseContext.getCurrentId());
-        addressBookMapper.updateIsDefaultByUserId(addressBook);
+        addressBookMapper.resetDefaultByUserId(userId);
         // 2、再把当前地址设置成默认地址
-        addressBook.setIsDefault(1);
-        addressBookMapper.udpate(addressBook);
+        addressBookMapper.setDefault(addressId);
     }
 
     /**
      * 根据id删除地址
      * @param id
      */
-    public void deleteById(Integer id) {
-        addressBookMapper.delete(id);
+    public void deleteById(Long id) {
+        addressBookMapper.deleteById(id);
     }
 
+    /**
+     * 查询用户默认地址
+     * @param userId
+     * @return
+     */
+    public AddressBook getDefault(Long userId) {
+        return addressBookMapper.getDefaultByUserId(userId);
+    }
 }

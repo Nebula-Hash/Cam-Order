@@ -4,12 +4,10 @@ import { ElMessageBox, ElMessage } from 'element-plus'
 import { useUserInfoStore } from '@/store'
 import { ref, reactive, onMounted, onBeforeUnmount } from 'vue'
 import { fixPwdAPI } from '@/api/employee'
-import { getStatusAPI, fixStatusAPI } from '@/api/shop'
 import { ElNotification } from 'element-plus'
 
 // ------ data ------
 const dialogFormVisible = ref(false)
-const dialogStatusVisible = ref(false)
 const formLabelWidth = '80px'
 const isCollapse = ref(false)
 
@@ -20,34 +18,19 @@ const menuList = [
     icon: 'pieChart',
   },
   {
-    title: '数据统计',
-    path: '/statistics',
-    icon: 'memo',
-  },
-  {
-    title: '订单管理',
-    path: '/order',
-    icon: 'collection',
-  },
-  {
-    title: '分类管理',
-    path: '/category',
-    icon: 'postcard',
-  },
-  {
-    title: '套餐管理',
-    path: '/setmeal',
-    icon: 'user',
-  },
-  {
-    title: '菜品管理',
-    path: '/dish',
-    icon: 'dish',
+    title: '窗口管理',
+    path: '/window',
+    icon: 'grid',
   },
   {
     title: '员工管理',
     path: '/employee',
     icon: 'setting',
+  },
+  {
+    title: '数据统计',
+    path: '/statistics',
+    icon: 'memo',
   },
 ]
 
@@ -57,8 +40,6 @@ const form = reactive({
   rePwd: '',
 })
 const pwdRef = ref()
-const status = ref(1)
-const status_active = ref(1) // 单选框绑定的动态值
 
 // 自定义校验规则: 两次密码是否一致
 const samePwd = (rules: any, value: any, callback: any) => {
@@ -100,23 +81,6 @@ const getActiveAside = () => {
   return route.path;
 };
 
-// 初始化时获取营业状态
-const init = async () => {
-  const { data: res } = await getStatusAPI()
-  console.log('初始化后的status status_active', res.data)
-  status.value = res.data
-  status_active.value = res.data
-}
-init()
-
-// 关闭修改店铺状态对话框
-const cancelStatus = () => {
-  ElMessage({
-    type: 'info',
-    message: '已取消修改',
-  })
-  dialogStatusVisible.value = false
-}
 // 关闭修改密码对话框
 const cancelForm = () => {
   ElMessage({
@@ -124,20 +88,6 @@ const cancelForm = () => {
     message: '已取消修改',
   })
   dialogFormVisible.value = false
-}
-// 修改店铺状态
-const fixStatus = async () => {
-  console.log('修改后的店铺状态为')
-  console.log(status_active.value)
-  const { data: res } = await fixStatusAPI(status_active.value)
-  if (res.code != 0) return   // 修改失败信息会在相应拦截器中捕获并提示
-  // 修改成功才改变status的值
-  status.value = status_active.value
-  ElMessage({
-    type: 'success',
-    message: '修改成功',
-  })
-  dialogStatusVisible.value = false
 }
 // 修改密码
 const fixPwd = async () => {
@@ -192,7 +142,6 @@ const quitFn = () => {
 
 // refs
 const websocket = ref<WebSocket | null>(null)
-const shopShow = ref(false)
 
 const audio1 = ref<HTMLAudioElement | null>(null)
 const audio2 = ref<HTMLAudioElement | null>(null)
@@ -260,14 +209,8 @@ const webSocket = () => {
   }
 }
 
-const handleClose = () => {
-  shopShow.value = false
-}
-
 // lifecycle hooks
 onMounted(() => {
-  document.addEventListener('click', handleClose)
-  // getStatus()
   webSocket()
 })
 
@@ -280,22 +223,6 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="common-layout">
-    <el-dialog v-model="dialogStatusVisible" title="店铺状态设置" width="500">
-      <el-radio-group v-model="status_active">
-        <el-radio :value="1" size="large">营业中
-          <span>当前餐厅处于营业状态，自动接收任何订单，可点击打烊进入店铺打烊状态。</span>
-        </el-radio>
-        <el-radio :value="0" size="large">打烊中
-          <span>当前餐厅处于打烊状态，仅接受营业时间内的预定订单，可点击营业中手动恢复营业状态。</span>
-        </el-radio>
-      </el-radio-group>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="cancelStatus">取消</el-button>
-          <el-button type="primary" @click="fixStatus">确定</el-button>
-        </div>
-      </template>
-    </el-dialog>
     <el-dialog v-model="dialogFormVisible" title="修改密码" width="500">
       <el-form :model="form" :rules="rules" ref="pwdRef">
         <el-form-item prop="oldPwd" label="原密码" :label-width="formLabelWidth">
@@ -316,36 +243,41 @@ onBeforeUnmount(() => {
       </template>
     </el-dialog>
     <el-container>
-      <el-header>
-        <img src="../../assets/image/nebula_logo.png" class="logo" />
-        <el-icon class="icon1" v-if="isCollapse">
-          <Expand @click.stop="isCollapse = !isCollapse" />
-        </el-icon>
-        <el-icon class="icon1" v-else>
-          <Fold @click.stop="isCollapse = !isCollapse" />
-        </el-icon>
-        <div class="status">{{ status == 1 ? '营业中' : "打烊中" }}</div>
-        <div class="rightAudio">
-          <audio ref="audio1" hidden>
-            <source src="../../assets/preview.mp3" type="audio/mp3" />
-          </audio>
-          <audio ref="audio2" hidden>
-            <source src="../../assets/reminder.mp3" type="audio/mp3" />
-          </audio>
+      <el-header class="main-header">
+        <div class="header-left">
+          <el-icon class="menu-toggle" v-if="isCollapse">
+            <Expand @click.stop="isCollapse = !isCollapse" />
+          </el-icon>
+          <el-icon class="menu-toggle" v-else>
+            <Fold @click.stop="isCollapse = !isCollapse" />
+          </el-icon>
+          <header class="site-header">
+            <h1 class="site-title">学食界点餐平台</h1>
+          </header>
         </div>
-        <el-dropdown style="float: right">
-          <el-button type="primary">
-            {{ userInfoStore.userInfo ? userInfoStore.userInfo.account : '未登录' }}
-            <el-icon class="arrow-down-icon"><arrow-down /></el-icon>
-          </el-button>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item @click="dialogFormVisible = true">修改密码</el-dropdown-item>
-              <el-dropdown-item @click="quitFn">退出登录</el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
-        <el-button class="status-change" @click="dialogStatusVisible = true">店铺状态设置</el-button>
+
+        <div class="header-right">
+          <div class="rightAudio">
+            <audio ref="audio1" hidden>
+              <source src="../../assets/preview.mp3" type="audio/mp3" />
+            </audio>
+            <audio ref="audio2" hidden>
+              <source src="../../assets/reminder.mp3" type="audio/mp3" />
+            </audio>
+          </div>
+          <el-dropdown>
+            <el-button type="primary" class="user-dropdown">
+              {{ userInfoStore.userInfo ? userInfoStore.userInfo.account : '未登录' }}
+              <el-icon class="arrow-down-icon"><arrow-down /></el-icon>
+            </el-button>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item @click="dialogFormVisible = true">修改密码</el-dropdown-item>
+                <el-dropdown-item @click="quitFn">退出登录</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </div>
       </el-header>
       <el-container class="box1">
         <!-- 左侧导航菜单区域 -->
@@ -367,7 +299,7 @@ onBeforeUnmount(() => {
           <el-main>
             <router-view></router-view>
           </el-main>
-          <el-footer>© 2024.5.21 nebula-take-out Tech and Fun. All rights reserved.</el-footer>
+          <el-footer>© 2025.10.18 学食界点餐平台 基于 Vue3 + Uniapp + SpringBoot 开发</el-footer>
         </el-container>
       </el-container>
     </el-container>
@@ -397,31 +329,10 @@ onBeforeUnmount(() => {
     top: 18px;
     margin: 5px 10px 0 0;
   }
-
-  .status {
-    display: inline-block;
-    align-items: center;
-    vertical-align: top;
-    line-height: 30px;
-    margin: 15px 50px;
-    padding: 0 10px;
-    border-radius: 5px;
-    background-color: #eebb00;
-    color: #fff;
-  }
 }
 
 .rightAudio {
   float: right;
-  // margin: 14px 20px;
-}
-
-.status-change {
-  float: right;
-  margin: 14px 20px;
-  background-color: rgba(255, 255, 255, 0.3);
-  border: none;
-  color: #fff;
 }
 
 .user {
@@ -481,6 +392,85 @@ a:hover {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+/* 主头部样式 */
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+  height: 60px;
+  background-color: #00aaff;
+  color: #ffffff;
+}
+
+/* 头部左侧区域 */
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+/* 菜单切换按钮 */
+.menu-toggle {
+  font-size: 24px;
+  margin: 0 15px;
+  cursor: pointer;
+  color: #fff;
+}
+
+/* 顶部标题整体 */
+.site-header {
+  flex: 1;
+  padding: 0;
+  text-align: left;
+  background: none;
+  box-shadow: none;
+}
+
+/* 网站标题文字 */
+.site-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  letter-spacing: 2px;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, text-shadow 0.3s ease;
+  cursor: default;
+  margin: 0;
+  line-height: 60px;
+}
+
+.site-title:hover {
+  transform: scale(1.05);
+  text-shadow: 4px 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* 头部右侧区域 */
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+/* 音频元素容器 */
+.rightAudio {
+  display: flex;
+  align-items: center;
+}
+
+/* 用户下拉菜单 */
+.user-dropdown {
+  margin: 0 20px;
+  background-color: #eebb00;
+  border-color: #eebb00;
+  color: #fff;
+}
+
+/* 删除重复的el-header样式，使用main-header代替 */
+.el-header {
+  padding: 0;
+  line-height: normal;
 }
 </style>
 

@@ -55,10 +55,8 @@ const initChart = () => {
       },
       type: 'category',
       axisLabel: {
-        textStyle: {
-          color: '#666',
-          fontSize: '12px',
-        },
+        color: '#666',
+        fontSize: 12,
       },
       data: props.top10data.nameList,
     },
@@ -74,26 +72,26 @@ const initChart = () => {
         barGap: '80%',
         barCategoryGap: '80%',
         itemStyle: {
-          emphasis: {
-            barBorderRadius: 30,
+          borderRadius: [0, 10, 10, 0],
+          color: new echarts.graphic.LinearGradient(
+            1, 0,
+            0, 0,
+            [
+              { offset: 0, color: '#00aaff' },
+              { offset: 1, color: '#22ccff' },
+            ]
+          ),
+        },
+        emphasis: {
+          itemStyle: {
+            borderRadius: 30,
           },
-          normal: {
-            barBorderRadius: [0, 10, 10, 0],
-            color: new echarts.graphic.LinearGradient(
-              1,0,
-              0,0,
-              [
-                { offset: 0, color: '#00aaff' },
-                { offset: 1, color: '#22ccff' },
-              ]
-            ),
-            label: {
-              show: true,
-              formatter: '{@score}',
-              color: '#333',
-              position: ['8', '5'],
-            },
-          },
+        },
+        label: {
+          show: true,
+          formatter: '{@score}',
+          color: '#333',
+          position: [8, 5],
         },
       },
     ],

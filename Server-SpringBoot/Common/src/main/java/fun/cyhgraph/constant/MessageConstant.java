@@ -3,6 +3,7 @@ package fun.cyhgraph.constant;
 public class MessageConstant {
 
     public static final String ACCOUNT_NOT_FOUND = "账号不存在";
+    public static final String ACCOUNT_EXIST = "账号已存在";
     public static final String PASSWORD_ERROR = "密码错误";
     public static final String ALREADY_EXiST = "已存在";
     public static final String DISH_ON_SALE = "起售中的菜品不能删除";

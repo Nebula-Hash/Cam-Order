@@ -5,7 +5,9 @@ import fun.cyhgraph.dto.UserLoginDTO;
 import fun.cyhgraph.entity.User;
 
 public interface UserService {
-    User wxLogin(UserLoginDTO userLoginDTO);
+    User login(UserLoginDTO userLoginDTO);
+
+    void register(UserLoginDTO userLoginDTO);
 
     User getUser(Integer id);
 

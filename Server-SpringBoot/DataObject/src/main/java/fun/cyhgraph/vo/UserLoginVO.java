@@ -14,6 +14,6 @@ import java.io.Serializable;
 public class UserLoginVO implements Serializable {
 
     private Integer id;
-    private String openid;
+    private String account;
     private String token;
 }

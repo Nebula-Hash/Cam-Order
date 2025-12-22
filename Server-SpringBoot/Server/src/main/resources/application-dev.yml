@@ -1,7 +1,7 @@
-hanye:
+nebula:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/hanye_take_out
+    url: jdbc:mysql://localhost:3306/cam-order
     username: root
     password: 1018
 
@@ -11,8 +11,8 @@ hanye:
     database: 0
 
   wechat:
-    appid: wx49709673ad0a3267
-    secret: 375b99461e3cd069d88bb95194561aa7
+    appid: wxab84a4d93c8f583c
+    secret: 778f6015ab0b337d1dcec990557136ab
 
     # 由于没企业商户号，这里只是摆设
     mchid: 1561414331

@@ -29,7 +29,7 @@ public class UserController {
     @PostMapping("/login")
     public Result<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO){
         log.info("用户传过来的登录信息：{}", userLoginDTO);
-        User user = userService.wxLogin(userLoginDTO);
+        User user = userService.login(userLoginDTO);
 
         // 上面的没抛异常，正常来到这里，说明登录成功
         // claims就是用户数据payload部分
@@ -42,10 +42,22 @@ public class UserController {
                 claims);
         UserLoginVO userLoginVO = UserLoginVO.builder()
                 .id(user.getId())
-                .openid(user.getOpenid())
+                .account(user.getAccount())
                 .token(token)
                 .build();
         return Result.success(userLoginVO);
+    }
+
+    /**
+     * 用户注册
+     * @param userLoginDTO
+     * @return
+     */
+    @PostMapping("/register")
+    public Result register(@RequestBody UserLoginDTO userLoginDTO){
+        log.info("用户传过来的注册信息：{}", userLoginDTO);
+        userService.register(userLoginDTO);
+        return Result.success();
     }
 
     /**

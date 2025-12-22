@@ -1,0 +1,109 @@
+.my_info.data-v-d3687551 {
+  height: 200rpx;
+  width: 750rpx;
+  background-color: #cceeff;
+  display: flex;
+  align-items: center;
+}
+.my_info .head.data-v-d3687551 {
+  width: 200rpx;
+  height: 200rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.my_info .head .head_image.data-v-d3687551 {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  background-color: #fff;
+}
+.my_info .phone_name.data-v-d3687551 {
+  flex: 1;
+}
+.my_info .phone_name .name.data-v-d3687551 {
+  display: flex;
+  align-items: center;
+}
+.my_info .phone_name .name .name_text.data-v-d3687551 {
+  font-size: 32rpx;
+  font-weight: 550;
+  color: #333333;
+  margin-right: 12rpx;
+}
+.my_info .phone_name .name .name_type.data-v-d3687551 {
+  width: 32rpx;
+  height: 32rpx;
+}
+.my_info .phone_name .phone.data-v-d3687551 {
+  margin-top: 10rpx;
+}
+.my_info .phone_name .phone .phone_text.data-v-d3687551 {
+  font-size: 28rpx;
+  color: #666666;
+}
+.my_info .login_guide.data-v-d3687551 {
+  flex: 1;
+}
+.my_info .login_guide .login_text.data-v-d3687551 {
+  display: block;
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #333333;
+}
+.my_info .login_guide .login_hint.data-v-d3687551 {
+  display: block;
+  margin-top: 10rpx;
+  font-size: 26rpx;
+  color: #666666;
+}
+.white_box.data-v-d3687551 {
+  margin: 20rpx;
+  background-color: #fff;
+  border-radius: 20rpx;
+}
+.white_box .bottom_text.data-v-d3687551 {
+  display: flex;
+  align-items: center;
+  margin: 0 20rpx 0 30rpx;
+  height: 100rpx;
+  line-height: 100rpx;
+}
+.white_box .bottom_text .icon.data-v-d3687551 {
+  width: 50rpx;
+  height: 45rpx;
+  padding: 8rpx 20rpx 0 0;
+  vertical-align: middle;
+}
+.white_box .bottom_text .text_left.data-v-d3687551 {
+  flex: 1;
+  font-size: 32rpx;
+  color: #333333;
+}
+.white_box .bottom_text .text_center.data-v-d3687551 {
+  flex: 1;
+  font-size: 32rpx;
+  color: #ff4d4f;
+  text-align: center;
+}
+.white_box .bottom_text .right_image.data-v-d3687551 {
+  width: 30rpx;
+  height: 100%;
+  position: relative;
+}
+.white_box .bottom_text .right_image .to_right.data-v-d3687551 {
+  width: 30rpx;
+  height: 30rpx;
+  position: absolute;
+  top: 50%;
+  right: 6rpx;
+  transform: translateY(-50%);
+}
+.white_box .logout_btn.data-v-d3687551 {
+  justify-content: center;
+}
+
+
+page {
+  background-color: #f8f8f8;
+}

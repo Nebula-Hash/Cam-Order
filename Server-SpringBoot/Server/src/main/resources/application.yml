@@ -6,15 +6,15 @@ spring:
     active: dev
 
   datasource:
-    driver-class-name: ${hanye.datasource.driver-class-name}
-    url: ${hanye.datasource.url}
-    username: ${hanye.datasource.username}
-    password: ${hanye.datasource.password}
+    driver-class-name: ${nebula.datasource.driver-class-name}
+    url: ${nebula.datasource.url}
+    username: ${nebula.datasource.username}
+    password: ${nebula.datasource.password}
   data:
     redis:
-      host: ${hanye.redis.host}
-      port: ${hanye.redis.port}
-      database: ${hanye.redis.database}
+      host: ${nebula.redis.host}
+      port: ${nebula.redis.port}
+      database: ${nebula.redis.database}
 
 
 mybatis:
@@ -33,10 +33,10 @@ login-reg:
     user-ttl: 864000000
     user-token-name: Authorization
 
-hanye:
+nebula:
   wechat:
-    appid: ${hanye.wechat.appid}
-    secret: ${hanye.wechat.secret}
+    appid: ${nebula.wechat.appid}
+    secret: ${nebula.wechat.secret}
 
   jwt:
     # 设置jwt签名加密时使用的秘钥
@@ -50,6 +50,6 @@ hanye:
     user-token-name: authentication
 
   shop:
-    address: 河北省沧州市沧州师范学院
+    address: ZhengZhou University
   baidu:
     ak: ePMydufnJzBBTQlrzKwxAmlpRApLxmOW

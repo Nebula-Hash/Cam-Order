@@ -58,9 +58,9 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private WebSocketServer webSocketServer;
     // 这个Value是annotation注解的包，不是lombok的！
-    @Value("${hanye.shop.address}")
+    @Value("${nebula.shop.address}")
     private String shopAddress;
-    @Value("${hanye.baidu.ak}")
+    @Value("${nebula.baidu.ak}")
     private String ak;
 
     /**

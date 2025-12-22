@@ -1,43 +1,43 @@
 {
   "properties": [
     {
-      "name": "hanye.datasource.driver-class-name",
+      "name": "nebula.datasource.driver-class-name",
       "type": "java.lang.String",
-      "description": "Description for hanye.datasource.driver-class-name."
+      "description": "Description for nebula.datasource.driver-class-name."
     },
     {
-      "name": "hanye.datasource.url",
+      "name": "nebula.datasource.url",
       "type": "java.lang.String",
-      "description": "Description for hanye.datasource.url."
+      "description": "Description for nebula.datasource.url."
     },
     {
-      "name": "hanye.datasource.username",
+      "name": "nebula.datasource.username",
       "type": "java.lang.String",
-      "description": "Description for hanye.datasource.username."
+      "description": "Description for nebula.datasource.username."
     },
     {
-      "name": "hanye.datasource.password",
+      "name": "nebula.datasource.password",
       "type": "java.lang.String",
-      "description": "Description for hanye.datasource.password."
+      "description": "Description for nebula.datasource.password."
     },
     {
-      "name": "hanye.redis.host",
+      "name": "nebula.redis.host",
       "type": "java.lang.String",
-      "description": "Description for hanye.redis.host."
+      "description": "Description for nebula.redis.host."
     },
     {
-      "name": "hanye.redis.port",
+      "name": "nebula.redis.port",
       "type": "java.lang.String",
-      "description": "Description for hanye.redis.port."
+      "description": "Description for nebula.redis.port."
     },
     {
-      "name": "hanye.redis.password",
+      "name": "nebula.redis.password",
       "type": "java.lang.String",
-      "description": "Description for hanye.redis.password."
+      "description": "Description for nebula.redis.password."
     },
     {
-      "name": "hanye.redis.database",
+      "name": "nebula.redis.database",
       "type": "java.lang.String",
-      "description": "Description for hanye.redis.database."
+      "description": "Description for nebula.redis.database."
     }
   ] }

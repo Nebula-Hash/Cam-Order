@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -20,8 +21,8 @@ public class User implements Serializable {
     private String name;
     private String phone;
     private Integer gender;
-    private String idNumber;
     private String pic;
+    private BigDecimal balance;  // 账户余额
     private LocalDateTime createTime;
 
 }

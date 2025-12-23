@@ -39,11 +39,15 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderDetailMapper orderDetailMapper;
     @Autowired
+    private OrderSubMapper orderSubMapper;
+    @Autowired
     private CartMapper cartMapper;
     @Autowired
     private AddressBookMapper addressBookMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private WindowMapper windowMapper;
     @Autowired
     private WebSocketServer webSocketServer;
 
@@ -57,10 +61,24 @@ public class OrderServiceImpl implements OrderService {
      */
     @Transactional
     public OrderSubmitVO submit(OrderSubmitDTO orderSubmitDTO) {
-        // 1、查询校验地址情况
-        AddressBook addressBook = addressBookMapper.getById(orderSubmitDTO.getAddressId());
-        if (addressBook == null) {
-            throw new AddressBookBusinessException(MessageConstant.ADDRESS_BOOK_IS_NULL);
+        // 获取配送方式，默认为配送
+        Integer deliveryType = orderSubmitDTO.getDeliveryType();
+        if (deliveryType == null) {
+            deliveryType = Order.DELIVERY_TYPE_DELIVERY;
+        }
+        
+        // 配送费：配送6元，自取0元
+        BigDecimal deliveryFee = deliveryType.equals(Order.DELIVERY_TYPE_DELIVERY) 
+            ? new BigDecimal("6.00") 
+            : BigDecimal.ZERO;
+
+        // 1、查询校验地址情况（仅配送时需要）
+        AddressBook addressBook = null;
+        if (deliveryType.equals(Order.DELIVERY_TYPE_DELIVERY)) {
+            addressBook = addressBookMapper.getById(orderSubmitDTO.getAddressId());
+            if (addressBook == null) {
+                throw new AddressBookBusinessException(MessageConstant.ADDRESS_BOOK_IS_NULL);
+            }
         }
 
         // 2、查询校验购物车情况
@@ -73,10 +91,17 @@ public class OrderServiceImpl implements OrderService {
         // 3、构建主订单数据
         Order order = new Order();
         BeanUtils.copyProperties(orderSubmitDTO, order);
-        order.setAddressBookId(orderSubmitDTO.getAddressId());
-        order.setPhone(addressBook.getPhone());
-        order.setDormitory(addressBook.getDormitory());
-        order.setConsignee(addressBook.getConsignee());
+        order.setDeliveryType(deliveryType);
+        order.setDeliveryFee(deliveryFee);
+        
+        // 配送时设置地址信息，自取时地址相关字段为空
+        if (deliveryType.equals(Order.DELIVERY_TYPE_DELIVERY) && addressBook != null) {
+            order.setAddressBookId(orderSubmitDTO.getAddressId());
+            order.setPhone(addressBook.getPhone());
+            order.setDormitory(addressBook.getDormitory());
+            order.setConsignee(addressBook.getConsignee());
+        }
+        
         // 利用时间戳来生成当前订单的编号
         order.setNumber(String.valueOf(System.currentTimeMillis()));
         // 生成取餐码 (简单使用4位随机数)
@@ -86,12 +111,14 @@ public class OrderServiceImpl implements OrderService {
         order.setPayStatus(Order.PAY_STATUS_UNPAID);
         order.setOrderTime(LocalDateTime.now());
 
-        // 计算总金额
+        // 计算总金额 = 菜品金额 + 配送费
         BigDecimal totalAmount = BigDecimal.ZERO;
         for (Cart cart : cartList) {
             BigDecimal itemAmount = cart.getAmount().multiply(new BigDecimal(cart.getNumber()));
             totalAmount = totalAmount.add(itemAmount);
         }
+        // 加上配送费
+        totalAmount = totalAmount.add(deliveryFee);
         order.setAmount(totalAmount);
 
         this.currentOrder = order;
@@ -99,27 +126,64 @@ public class OrderServiceImpl implements OrderService {
         // 4、向订单表插入1条数据
         orderMapper.insert(order);
 
-        // 5、构建订单明细数据
-        List<OrderDetail> orderDetailList = new ArrayList<>();
-        for (Cart c : cartList) {
-            OrderDetail orderDetail = new OrderDetail();
-            BeanUtils.copyProperties(c, orderDetail);
-            orderDetail.setOrderId(order.getId());
-            orderDetailList.add(orderDetail);
+        // 5、按窗口分组购物车数据
+        Map<Integer, List<Cart>> cartByWindow = cartList.stream()
+                .collect(Collectors.groupingBy(Cart::getWindowId));
+
+        // 6、为每个窗口创建子订单和订单明细
+        List<OrderDetail> allOrderDetails = new ArrayList<>();
+        
+        for (Map.Entry<Integer, List<Cart>> entry : cartByWindow.entrySet()) {
+            Integer windowId = entry.getKey();
+            List<Cart> windowCartList = entry.getValue();
+            
+            // 计算该窗口的金额
+            BigDecimal windowAmount = BigDecimal.ZERO;
+            for (Cart cart : windowCartList) {
+                windowAmount = windowAmount.add(cart.getAmount().multiply(new BigDecimal(cart.getNumber())));
+            }
+            
+            // 获取窗口名称
+            Window window = windowMapper.getById(windowId);
+            String windowName = window != null ? window.getName() : "未知窗口";
+            
+            // 创建子订单
+            OrderSub orderSub = OrderSub.builder()
+                    .orderId(order.getId())
+                    .windowId(windowId)
+                    .windowName(windowName)
+                    .status(OrderSub.PENDING)
+                    .amount(windowAmount)
+                    .estimatedTime(15) // 默认预计15分钟
+                    .build();
+            orderSubMapper.insert(orderSub);
+            
+            // 创建该窗口的订单明细
+            for (Cart cart : windowCartList) {
+                OrderDetail orderDetail = new OrderDetail();
+                BeanUtils.copyProperties(cart, orderDetail);
+                orderDetail.setOrderId(order.getId());
+                orderDetail.setOrderSubId(orderSub.getId());
+                allOrderDetails.add(orderDetail);
+            }
         }
 
-        // 6、向明细表插入n条数据
-        orderDetailMapper.insertBatch(orderDetailList);
+        // 7、向明细表插入数据
+        if (!allOrderDetails.isEmpty()) {
+            orderDetailMapper.insertBatch(allOrderDetails);
+        }
 
-        // 7、清理购物车中的数据
+        // 8、清理购物车中的数据
         cartMapper.deleteByUserId(userId.intValue());
 
-        // 8、封装返回结果
+        // 9、封装返回结果
         OrderSubmitVO orderSubmitVO = OrderSubmitVO.builder()
                 .id(order.getId())
                 .orderNumber(order.getNumber())
                 .orderAmount(order.getAmount())
                 .orderTime(order.getOrderTime())
+                .deliveryType(order.getDeliveryType())
+                .pickupCode(order.getPickupCode())
                 .build();
         return orderSubmitVO;
     }
@@ -227,9 +291,20 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     public OrderPaymentVO payment(OrderPaymentDTO orderPaymentDTO) {
-        // 模拟支付成功
-        OrderPaymentVO vo = new OrderPaymentVO();
-        vo.setPackageStr("prepay_id=mock");
+        // 获取当前用户
+        Integer userId = BaseContext.getCurrentId();
+        User user = userMapper.getById(userId);
+        
+        // 检查余额是否充足
+        if (user.getBalance() == null || user.getBalance().compareTo(this.currentOrder.getAmount()) < 0) {
+            throw new OrderBusinessException("余额不足，请先充值");
+        }
+        
+        // 扣减余额
+        int result = userMapper.deductBalance(userId, this.currentOrder.getAmount());
+        if (result == 0) {
+            throw new OrderBusinessException("支付失败，余额不足");
+        }
 
         // 更新订单状态
         Integer OrderPaidStatus = Order.PAY_STATUS_PAID;
@@ -246,6 +321,8 @@ public class OrderServiceImpl implements OrderService {
         log.info("发送来单提醒：{}", map);
         webSocketServer.sendToAllClient(json);
 
+        OrderPaymentVO vo = new OrderPaymentVO();
+        vo.setPackageStr("prepay_id=mock");
         return vo;
     }
 

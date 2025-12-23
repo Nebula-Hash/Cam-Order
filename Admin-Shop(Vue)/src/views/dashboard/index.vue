@@ -62,7 +62,7 @@ const init = async () => {
 const getOrderListBy3Status = async () => {
   try {
     const res = await getOrderListByAPI()
-    if (res.data.code === 0) {
+    if (res.data.code === 1) {
       orderStatics.value = res.data.data
     } else {
       console.error(res.data.msg)

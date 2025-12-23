@@ -1,6 +1,14 @@
 <template>
   <view class="white_box">
     <view class="orderDetail">{{ statusList[order.status as number].name }}</view>
+
+    <!-- 自取订单显示取餐码 -->
+    <view class="pickup_code_box" v-if="order.deliveryType === 2 && order.pickupCode">
+      <view class="pickup_code_label">取餐码</view>
+      <view class="pickup_code_value">{{ order.pickupCode }}</view>
+      <view class="pickup_code_tips">请凭此取餐码到窗口取餐</view>
+    </view>
+
     <view class="time_box" v-if="order.status === 1">
       <view class="time" v-if="countdownStore.showM <= 0 && countdownStore.showS <= 0">订单已超时</view>
       <view class="time" v-else>
@@ -44,7 +52,9 @@
       </view>
       <view class="word_text">
         <view class="word_left">配送费</view>
-        <view class="word_right">￥6</view>
+        <view class="word_right" :class="{ 'free_fee': order.deliveryType === 2 }">
+          {{ order.deliveryType === 2 ? '免费（自取）' : '￥' + (order.deliveryFee || 6) }}
+        </view>
       </view>
       <view class="all_price">
         <text class="word_right">总价 ￥{{ order.amount }}</text>
@@ -81,12 +91,16 @@
       <view class="text_right">{{ order.number }}</view>
     </view>
     <view class="bottom_text">
+      <view class="text_left">配送方式</view>
+      <view class="text_right">{{ order.deliveryType === 2 ? '自取' : '配送' }}</view>
+    </view>
+    <view class="bottom_text">
       <view class="text_left">下单时间</view>
       <view class="text_right">{{ order.orderTime }}</view>
     </view>
-    <view class="bottom_text">
+    <view class="bottom_text" v-if="order.deliveryType === 1">
       <view class="text_left">地址</view>
-      <view class="text_right">{{ order.address }}</view>
+      <view class="text_right">{{ order.dormitory || order.address }}</view>
     </view>
     <view class="bottom_text">
       <view class="text_left">餐具数量</view>
@@ -271,6 +285,34 @@ const toPay = async () => {
     text-align: center;
   }
 
+  // 取餐码显示
+  .pickup_code_box {
+    background: linear-gradient(135deg, #00aaff, #0088cc);
+    margin: 20rpx 30rpx;
+    border-radius: 16rpx;
+    padding: 30rpx;
+    text-align: center;
+
+    .pickup_code_label {
+      font-size: 26rpx;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 10rpx;
+    }
+
+    .pickup_code_value {
+      font-size: 72rpx;
+      font-weight: bold;
+      color: #fff;
+      letter-spacing: 16rpx;
+    }
+
+    .pickup_code_tips {
+      font-size: 24rpx;
+      color: rgba(255, 255, 255, 0.7);
+      margin-top: 10rpx;
+    }
+  }
+
   .time_box {
     // display: flex;
     // justify-content: center;
@@ -435,6 +477,10 @@ const toPay = async () => {
       line-height: 44rpx;
       letter-spacing: 0px;
       padding-right: 20rpx;
+    }
+
+    .free_fee {
+      color: #52c41a;
     }
   }
 

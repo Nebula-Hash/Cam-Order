@@ -10,3 +10,13 @@ export const getCategoryAPI = () => {
     url: '/user/category/list',
   })
 }
+
+/**
+ * 根据窗口ID获取分类列表
+ */
+export const getCategoryByWindowAPI = (windowId: number) => {
+  return http<CategoryItem[]>({
+    method: 'GET',
+    url: `/user/category/list/${windowId}`,
+  })
+}

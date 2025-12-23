@@ -19,8 +19,9 @@ public class OrderSubmitDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Long addressId;      // 地址簿ID
-    private Integer payMethod;   // 付款方式：1-微信 2-支付宝
-    private String remark;       // 备注
-    private BigDecimal amount;   // 总金额
+    private Long addressId;        // 地址簿ID（配送时必填，自取时可为空）
+    private Integer payMethod;     // 付款方式：1-微信 2-支付宝
+    private String remark;         // 备注
+    private BigDecimal amount;     // 总金额（含配送费）
+    private Integer deliveryType;  // 配送方式：1-配送 2-自取
 }

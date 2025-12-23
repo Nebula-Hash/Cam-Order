@@ -4,8 +4,8 @@
 <mapper namespace="fun.cyhgraph.mapper.UserMapper">
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        insert into user (account, password, name, phone, gender, id_number, pic, create_time) VALUES
-        (#{account}, #{password}, #{name}, #{phone}, #{gender}, #{idNumber}, #{pic}, #{createTime})
+        insert into user (account, password, name, phone, gender, pic, create_time) VALUES
+        (#{account}, #{password}, #{name}, #{phone}, #{gender}, #{pic}, #{createTime})
     </insert>
 
     <update id="update">

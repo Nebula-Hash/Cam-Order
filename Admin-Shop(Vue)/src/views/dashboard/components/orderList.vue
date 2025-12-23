@@ -319,7 +319,7 @@ const orderAccept = async (row: any) => {
   orderId.value = row.id;
   dialogOrderStatus.value = row.status;
   const res = await orderAcceptAPI({ id: orderId.value })
-  if (res.data.code === 0) {
+  if (res.data.code === 1) {
     console.log('操作成功')
     orderId.value = ''
     dialogVisible.value = false
@@ -362,7 +362,7 @@ const confirmCancel = async () => {
   };
   // 请求
   const { data: res } = await action(payload)
-  if (res.code === 0) {
+  if (res.code === 1) {
     cancelDialogVisible.value = false;
     orderId.value = '';
     ElMessage.success(`${cancelDialogTitle.value}成功`)
@@ -378,7 +378,7 @@ const deliveryOrComplete = async (status1: number, id: number) => {
   const params = { status1, id };
 
   const { data: res } = await action(params)
-  if (res.code === 0) {
+  if (res.code === 1) {
     orderId.value = ''
     dialogVisible.value = false
     ElMessage.success(`${status1 === 3 ? '派送成功' : '订单完成'}`)

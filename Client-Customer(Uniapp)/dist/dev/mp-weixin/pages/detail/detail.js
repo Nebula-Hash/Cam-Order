@@ -9,6 +9,7 @@ require("../../stores/modules/user.js");
 const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "detail",
   setup(__props) {
+    const windowId = common_vendor.ref(0);
     const categoryList = common_vendor.ref([]);
     const dish = common_vendor.ref();
     const setmeal = common_vendor.ref();
@@ -21,6 +22,9 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     const flavors = common_vendor.ref([]);
     const chosedflavors = common_vendor.ref([]);
     common_vendor.onLoad(async (options) => {
+      if (options == null ? void 0 : options.windowId) {
+        windowId.value = Number(options.windowId);
+      }
       await getCartList();
       await getCategoryData();
       if (options && "dishId" in options) {
@@ -54,7 +58,11 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     const getCartList = async () => {
       const res = await api_cart.getCartAPI();
       console.log("初始化购物车列表", res);
-      cartList.value = res.data;
+      if (windowId.value) {
+        cartList.value = (res.data || []).filter((item) => item.windowId === windowId.value);
+      } else {
+        cartList.value = res.data || [];
+      }
       CartAllNumber.value = cartList.value.reduce((acc, cur) => acc + cur.number, 0);
       CartAllPrice.value = cartList.value.reduce((acc, cur) => acc + cur.amount * cur.number, 0);
       console.log("CartAllNumber", CartAllNumber.value);
@@ -81,6 +89,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       delete tmpdish.flavors;
       dialogDish.value = tmpdish;
       const moreNormdata = dish2.flavors.map((obj) => ({ ...obj, list: JSON.parse(obj.list) }));
+      chosedflavors.value = [];
       moreNormdata.forEach((item) => {
         if (item.list && item.list.length > 0) {
           chosedflavors.value.push(item.list[0]);

@@ -37,8 +37,8 @@ instance.interceptors.response.use(
   (response) => {
     // console.log('------响应拦截器-------')
     console.log(response)
-    // 如果返回的data里有状态码code并且不是0，说明后端返回了错误信息（token过期等），这时候要给前端提示错误信息
-    if ('code' in response.data && response.data.code !== 0) {
+    // 如果返回的data里有状态码code并且不是1，说明后端返回了错误信息（token过期等），这时候要给前端提示错误信息
+    if ('code' in response.data && response.data.code !== 1) {
       // "xxx已存在" 等各种重复错误，后端有返回提示信息，此处在前端用ElMessage做统一拦截提示
       ElMessage.error(response.data.msg)
     }

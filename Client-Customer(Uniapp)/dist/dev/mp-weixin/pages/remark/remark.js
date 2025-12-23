@@ -6,9 +6,12 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     const remark = common_vendor.ref("");
     const returnToSubmit = () => {
       console.log("remark", remark.value);
-      common_vendor.index.redirectTo({
-        url: "/pages/submit/submit?remark=" + remark.value
-      });
+      const pages = getCurrentPages();
+      const prevPage = pages[pages.length - 2];
+      if (prevPage && prevPage.$vm) {
+        prevPage.$vm.remark = remark.value;
+      }
+      common_vendor.index.navigateBack();
     };
     return (_ctx, _cache) => {
       return {

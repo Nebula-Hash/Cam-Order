@@ -17,3 +17,12 @@ export const updateUserAPI = (params: any) => {
     data: params,
   })
 }
+
+// 充值
+export const rechargeAPI = (amount: number) => {
+  return http({
+    url: '/user/user/recharge',
+    method: 'POST',
+    data: { amount },
+  })
+}

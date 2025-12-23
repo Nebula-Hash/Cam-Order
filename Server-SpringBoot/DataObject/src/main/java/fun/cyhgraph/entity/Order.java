@@ -39,20 +39,28 @@ public class Order implements Serializable {
     public static final Integer PAY_STATUS_PAID = 1;     // 已支付
     public static final Integer PAY_STATUS_REFUNDED = 2; // 已退款
 
+    /**
+     * 配送方式常量
+     */
+    public static final Integer DELIVERY_TYPE_DELIVERY = 1;  // 配送
+    public static final Integer DELIVERY_TYPE_PICKUP = 2;    // 自取
+
     private Long id;                      // 主键
     private String number;                // 订单号
     private String pickupCode;            // 统一取餐码
+    private Integer deliveryType;         // 配送方式：1-配送 2-自取
     private Integer status;               // 订单状态
     private Long userId;                  // 下单用户ID
-    private Long addressBookId;           // 地址ID
-    private String consignee;             // 收餐人
+    private Long addressBookId;           // 地址ID（自取时可为空）
+    private String consignee;             // 收餐人（自取时可为空）
     private String phone;                 // 手机号
-    private String dormitory;             // 宿舍楼号
+    private String dormitory;             // 宿舍楼号（自取时可为空）
     private LocalDateTime orderTime;      // 下单时间
     private LocalDateTime checkoutTime;   // 结账时间
     private Integer payMethod;            // 支付方式：1-微信 2-支付宝
     private Integer payStatus;            // 支付状态：0-未支付 1-已支付 2-已退款
-    private BigDecimal amount;            // 总金额
+    private BigDecimal amount;            // 总金额（含配送费）
+    private BigDecimal deliveryFee;       // 配送费（自取时为0）
     private String remark;                // 备注
     private String cancelReason;          // 取消原因
     private LocalDateTime cancelTime;     // 取消时间

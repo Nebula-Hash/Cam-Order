@@ -15,4 +15,5 @@ export type ProfileDetail = BaseProfile & {
   phone?: string // 手机号
   gender?: number // 性别
   pic?: string // 头像
+  balance?: number // 账户余额
 }

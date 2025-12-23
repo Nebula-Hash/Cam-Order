@@ -32,13 +32,6 @@ const updateAddressAPI = (address) => {
     data: address
   });
 };
-const updateDefaultAddressAPI = (address) => {
-  return utils_http.http({
-    method: "PUT",
-    url: "/user/address/default",
-    data: address
-  });
-};
 const deleteAddressAPI = (id) => {
   return utils_http.http({
     method: "DELETE",
@@ -51,4 +44,3 @@ exports.getAddressByIdAPI = getAddressByIdAPI;
 exports.getAddressListAPI = getAddressListAPI;
 exports.getDefaultAddressAPI = getDefaultAddressAPI;
 exports.updateAddressAPI = updateAddressAPI;
-exports.updateDefaultAddressAPI = updateDefaultAddressAPI;

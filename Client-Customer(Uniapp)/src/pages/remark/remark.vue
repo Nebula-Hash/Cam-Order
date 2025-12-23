@@ -1,12 +1,7 @@
 <template>
   <view class="uni-textarea">
-    <textarea
-      class="remark_text"
-      placeholder-class="textarea-placeholder"
-      v-model="remark"
-      :maxlength="50"
-      placeholder="请输入您需要备注的信息"
-    />
+    <textarea class="remark_text" placeholder-class="textarea-placeholder" v-model="remark" :maxlength="50"
+      placeholder="请输入您需要备注的信息" />
     <view class="fifty">{{ remark.length }} / 50</view>
   </view>
   <view class="add_address">
@@ -15,21 +10,27 @@
 </template>
 
 <script lang="ts" setup>
-import {ref} from 'vue'
+import { ref } from 'vue'
 
 const remark = ref('')
 
-// 返回提交页面，把备注信息传递给store
+// 返回提交页面，把备注信息传递给上一页
 const returnToSubmit = () => {
   console.log('remark', remark.value)
-  uni.redirectTo({
-    url: '/pages/submit/submit?remark=' + remark.value,
-  })
+  // 获取页面栈
+  const pages = getCurrentPages()
+  // 获取上一页
+  const prevPage = pages[pages.length - 2] as any
+  // 设置上一页的数据
+  if (prevPage && prevPage.$vm) {
+    prevPage.$vm.remark = remark.value
+  }
+  // 返回上一页
+  uni.navigateBack()
 }
 </script>
 
 <style lang="less" scoped>
-// 添加的备注
 .uni-textarea {
   margin: 30rpx;
   padding-left: 30rpx;
@@ -41,10 +42,12 @@ const returnToSubmit = () => {
   border-radius: 12rpx;
   padding-top: 20rpx;
   font-size: 26rpx;
+
   .remark_text {
     line-height: 60rpx;
     height: 200rpx;
   }
+
   .fifty {
     color: #bbbbbb;
   }

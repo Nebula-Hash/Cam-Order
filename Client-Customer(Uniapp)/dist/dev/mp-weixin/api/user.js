@@ -13,5 +13,13 @@ const updateUserAPI = (params) => {
     data: params
   });
 };
+const rechargeAPI = (amount) => {
+  return utils_http.http({
+    url: "/user/user/recharge",
+    method: "POST",
+    data: { amount }
+  });
+};
 exports.getUserInfoAPI = getUserInfoAPI;
+exports.rechargeAPI = rechargeAPI;
 exports.updateUserAPI = updateUserAPI;

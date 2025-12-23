@@ -7,7 +7,7 @@ import { http } from '@/utils/http'
 export const getWindowListAPI = () => {
   return http<WindowItem[]>({
     method: 'GET',
-    url: '/user/window/list',
+    url: '/client/window/list',
   })
 }
 
@@ -17,6 +17,6 @@ export const getWindowListAPI = () => {
 export const getWindowByIdAPI = (id: number) => {
   return http<WindowItem>({
     method: 'GET',
-    url: `/user/window/${id}`,
+    url: `/client/window/${id}`,
   })
 }

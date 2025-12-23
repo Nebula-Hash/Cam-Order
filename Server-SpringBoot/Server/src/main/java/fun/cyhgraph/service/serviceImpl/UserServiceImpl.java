@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Service
@@ -62,6 +63,7 @@ public class UserServiceImpl implements UserService {
         User user = User.builder()
                 .account(account)
                 .password(password)
+                .balance(new BigDecimal("100.00")) // 新用户赠送100元
                 .createTime(LocalDateTime.now())
                 .build();
         userMapper.insert(user);
@@ -86,5 +88,15 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         BeanUtils.copyProperties(userDTO, user);
         userMapper.update(user);
+    }
+
+    /**
+     * 用户充值
+     *
+     * @param userId
+     * @param amount
+     */
+    public void recharge(Integer userId, BigDecimal amount) {
+        userMapper.addBalance(userId, amount);
     }
 }

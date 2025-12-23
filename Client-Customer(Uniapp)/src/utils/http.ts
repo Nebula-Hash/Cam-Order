@@ -3,6 +3,9 @@ import { useUserStore } from '@/stores/modules/user'
 // 请求基地址
 const baseURL = 'http://localhost:8081'
 
+// 标记是否正在跳转登录页，避免重复跳转
+let isNavigatingToLogin = false
+
 // 拦截器配置
 const httpInterceptor = {
   // 拦截前触发
@@ -49,16 +52,43 @@ export const http = <T>(options: UniApp.RequestOptions) => {
       success(res) {
         console.log('响应  ', res)
         if (res.statusCode >= 200 && res.statusCode < 300) {
-          // 获取数据成功, 调用resolve，返回的是res.data而不是res，能省掉一层嵌套
-          // console.log('请求成功', res)
-          resolve(res.data as Data<T>) // 类型断言
+          const data = res.data as Data<T>
+          // 检查业务状态码，1表示成功
+          if (data.code === 1) {
+            resolve(data)
+          } else {
+            // 业务错误，显示错误信息
+            uni.showToast({
+              title: data.msg || '操作失败',
+              icon: 'none',
+            })
+            reject(data)
+          }
         } else if (res.statusCode === 401) {
           // 401错误, 说明token过期, 调用reject,
           // 清理用户信息
           const userStore = useUserStore()
           userStore.clearProfile()
-          // 跳转到登录页
-          uni.navigateTo({ url: '/pages/login/login' })
+          // 避免重复跳转登录页
+          if (!isNavigatingToLogin) {
+            isNavigatingToLogin = true
+            uni.showToast({
+              title: '请先登录',
+              icon: 'none',
+            })
+            setTimeout(() => {
+              // 跳转到登录页
+              uni.navigateTo({
+                url: '/pages/login/login',
+                complete: () => {
+                  // 跳转完成后重置标记
+                  setTimeout(() => {
+                    isNavigatingToLogin = false
+                  }, 1000)
+                }
+              })
+            }, 500)
+          }
           reject(res)
         } else {
           // 通用错误, 调用reject, 轻量提示框
@@ -66,6 +96,7 @@ export const http = <T>(options: UniApp.RequestOptions) => {
             title: (res.data as Data<T>).msg || '请求失败',
             icon: 'none',
           })
+          reject(res)
         }
       },
       // 响应失败
@@ -80,4 +111,10 @@ export const http = <T>(options: UniApp.RequestOptions) => {
       },
     })
   })
+}
+
+// 检查是否已登录
+export const isLoggedIn = () => {
+  const userStore = useUserStore()
+  return !!userStore.profile?.token
 }

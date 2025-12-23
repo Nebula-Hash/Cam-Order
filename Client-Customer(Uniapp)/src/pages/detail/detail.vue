@@ -11,22 +11,13 @@
         <text class="number">{{ dish.price }}</text>
       </view>
       <!-- 1、选择规格(口味) -->
-      <image
-        v-if="dish && 'flavors' in dish && dish.flavors.length > 0"
-        class="choosenorm"
-        src="../../static/images/选择规格.png"
-        @tap.stop="chooseNorm(dish as DishItem)"
-        mode="scaleToFill"
-      />
+      <image v-if="dish && 'flavors' in dish && dish.flavors.length > 0" class="choosenorm"
+        src="../../static/images/选择规格.png" @tap.stop="chooseNorm(dish as DishItem)" mode="scaleToFill" />
       <!-- 2、加减菜品 -->
       <view v-else class="sub_add">
         <!-- 减菜按钮 -->
-        <image
-          v-if="getCopies(dish) > 0"
-          src="../../static/icon/sub.png"
-          @tap.stop="subDishAction(dish, '菜品')"
-          class="sub"
-        ></image>
+        <image v-if="getCopies(dish) > 0" src="../../static/icon/sub.png" @tap.stop="subDishAction(dish, '菜品')"
+          class="sub"></image>
         <!-- 菜品份数 -->
         <text v-if="getCopies(dish) > 0" class="dish_number">{{ getCopies(dish) }}</text>
         <!-- 加菜按钮 -->
@@ -55,12 +46,8 @@
       <!-- 加减菜品 -->
       <view class="sub_add">
         <!-- 减菜按钮 -->
-        <image
-          v-if="getCopies(setmeal) > 0"
-          src="../../static/icon/sub.png"
-          @tap.stop="subDishAction(setmeal, '套餐')"
-          class="sub"
-        ></image>
+        <image v-if="getCopies(setmeal) > 0" src="../../static/icon/sub.png" @tap.stop="subDishAction(setmeal, '套餐')"
+          class="sub"></image>
         <!-- 菜品份数 -->
         <text v-if="getCopies(setmeal) > 0" class="dish_number">{{ getCopies(setmeal) }}</text>
         <!-- 加菜按钮 -->
@@ -76,12 +63,9 @@
       <scroll-view class="scroll" scroll-y>
         <view v-for="flavor in flavors" :key="flavor.name" class="flavor">
           <view>{{ flavor.name }}</view>
-          <view
-            :class="{flavorItem: true, active: chosedflavors.findIndex((it) => item === it) !== -1}"
-            v-for="(item, index) in JSON.parse(flavor.list)"
-            :key="index"
-            @tap="chooseFlavor(JSON.parse(flavor.list), item)"
-          >
+          <view :class="{ flavorItem: true, active: chosedflavors.findIndex((it) => item === it) !== -1 }"
+            v-for="(item, index) in JSON.parse(flavor.list)" :key="index"
+            @tap="chooseFlavor(JSON.parse(flavor.list), item)">
             {{ item }}
           </view>
         </view>
@@ -130,12 +114,8 @@
             <view class="dish_price"> <text class="ico">￥</text> {{ obj.amount }} </view>
             <view class="dish_flavor"> {{ obj.dishFlavor }} </view>
             <view class="dish_active">
-              <image
-                v-if="obj.number && obj.number > 0"
-                src="../../static/icon/sub.png"
-                @click.stop="subDishAction(obj, '购物车')"
-                class="dish_sub"
-              ></image>
+              <image v-if="obj.number && obj.number > 0" src="../../static/icon/sub.png"
+                @click.stop="subDishAction(obj, '购物车')" class="dish_sub"></image>
               <text v-if="obj.number && obj.number > 0" class="dish_number">{{ obj.number }}</text>
               <image src="../../static/icon/add.png" class="dish_add" @click.stop="addDishAction(obj, '购物车')">
               </image>
@@ -149,18 +129,20 @@
 </template>
 
 <script lang="ts" setup>
-import type {CategoryItem} from '@/types/category'
-import type {DishItem, FlavorItem, DishToCartItem} from '@/types/dish'
-import type {SetmealItem, SetmealVOItem} from '@/types/setmeal'
-import type {CartDTO, CartItem} from '@/types/cart'
-import {getCategoryAPI} from '@/api/category'
-import {addToCartAPI, subCartAPI, getCartAPI, cleanCartAPI} from '@/api/cart'
-import {getDishByIdAPI} from '@/api/dish'
-import {getSetmealAPI} from '@/api/setmeal'
-import {onLoad, onShow} from '@dcloudio/uni-app'
-import {ref} from 'vue'
+import type { CategoryItem } from '@/types/category'
+import type { DishItem, FlavorItem, DishToCartItem } from '@/types/dish'
+import type { SetmealItem, SetmealVOItem } from '@/types/setmeal'
+import type { CartDTO, CartItem } from '@/types/cart'
+import { getCategoryAPI } from '@/api/category'
+import { addToCartAPI, subCartAPI, getCartAPI, cleanCartAPI } from '@/api/cart'
+import { getDishByIdAPI } from '@/api/dish'
+import { getSetmealAPI } from '@/api/setmeal'
+import { onLoad, onShow } from '@dcloudio/uni-app'
+import { ref } from 'vue'
 
 // ------ data ------
+// 窗口ID
+const windowId = ref<number>(0)
 // 分类列表
 const categoryList = ref<CategoryItem[]>([])
 // 菜品
@@ -184,6 +166,9 @@ const chosedflavors = ref<string[]>([])
 
 // ------ method ------
 onLoad(async (options) => {
+  if (options?.windowId) {
+    windowId.value = Number(options.windowId)
+  }
   await getCartList() // 获取购物车列表(一开始为空)
   await getCategoryData() // 获取分类列表
   if (options && 'dishId' in options) {
@@ -222,7 +207,12 @@ const getCategoryData = async () => {
 const getCartList = async () => {
   const res = await getCartAPI()
   console.log('初始化购物车列表', res)
-  cartList.value = res.data
+  // 如果有窗口ID，只显示当前窗口的购物车
+  if (windowId.value) {
+    cartList.value = (res.data || []).filter((item: CartItem) => item.windowId === windowId.value)
+  } else {
+    cartList.value = res.data || []
+  }
   CartAllNumber.value = cartList.value.reduce((acc, cur) => acc + cur.number, 0)
   CartAllPrice.value = cartList.value.reduce((acc, cur) => acc + cur.amount * cur.number, 0)
   console.log('CartAllNumber', CartAllNumber.value)
@@ -257,8 +247,9 @@ const chooseNorm = async (dish: DishItem) => {
   delete tmpdish.flavors
   dialogDish.value = tmpdish
   // 对 dish.flavors 数组中的每种口味进行映射，将list字段用 JSON.parse 转为数组，其他数据不动
-  const moreNormdata = dish.flavors.map((obj) => ({...obj, list: JSON.parse(obj.list)}))
+  const moreNormdata = dish.flavors.map((obj) => ({ ...obj, list: JSON.parse(obj.list) }))
   // 有口味的菜品，初始化选择每行的第一个口味，作为已选口味数据
+  chosedflavors.value = []
   moreNormdata.forEach((item) => {
     if (item.list && item.list.length > 0) {
       chosedflavors.value.push(item.list[0])
@@ -317,7 +308,7 @@ const addToCart = async (dish: DishToCartItem) => {
     return false
   }
   // 菜品需要拼接口味list，转为string，作为dishFlavor字段发送给后端
-  const partialCart: Partial<CartDTO> = {dishId: dish.id, dishFlavor: chosedflavors.value.join(',')}
+  const partialCart: Partial<CartDTO> = { dishId: dish.id, dishFlavor: chosedflavors.value.join(',') }
   await addToCartAPI(partialCart)
   // 数据库更新，所以拿到新的购物车列表(cartList)，页面才能跟着刷新
   await getCartList()
@@ -340,11 +331,11 @@ const addDishAction = async (item: any, form: string) => {
     await addToCartAPI(partialCart)
   } else if (form == '菜品') {
     // 2、添加的是菜品
-    const partialCart: Partial<CartDTO> = {dishId: dish.value!.id}
+    const partialCart: Partial<CartDTO> = { dishId: dish.value!.id }
     await addToCartAPI(partialCart)
   } else {
     // 3、添加的是套餐
-    const partialCart: Partial<CartDTO> = {setmealId: setmeal.value!.id}
+    const partialCart: Partial<CartDTO> = { setmealId: setmeal.value!.id }
     await addToCartAPI(partialCart)
   }
   // 数据库更新，所以拿到新的购物车列表(cartList)，页面才能跟着刷新
@@ -364,11 +355,11 @@ const subDishAction = async (item: any, form: string) => {
     await subCartAPI(partialCart)
   } else if (form == '菜品') {
     // 2、菜品
-    const partialCart: Partial<CartDTO> = {dishId: dish.value!.id}
+    const partialCart: Partial<CartDTO> = { dishId: dish.value!.id }
     await subCartAPI(partialCart)
   } else {
     // 3、套餐
-    const partialCart: Partial<CartDTO> = {setmealId: setmeal.value!.id}
+    const partialCart: Partial<CartDTO> = { setmealId: setmeal.value!.id }
     await subCartAPI(partialCart)
   }
   // 数据库更新，所以拿到新的购物车列表(cartList)，页面才能跟着刷新
@@ -438,6 +429,7 @@ const submitOrder = () => {
     text-align: center;
     font-size: 20rpx;
   }
+
   .active {
     background-color: #00aaff;
     color: #fff;

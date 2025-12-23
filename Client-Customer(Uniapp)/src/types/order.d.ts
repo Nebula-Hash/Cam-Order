@@ -4,12 +4,16 @@ export type OrderSubmitVO = Partial<{
   orderAmount: number // 订单金额
   orderNumber: string // 订单编号
   orderTime: Date // 下单时间
+  deliveryType: number // 配送方式：1-配送 2-自取
+  pickupCode: string // 取餐码（自取时返回）
 }>
 
 // 订单信息
 export type Order = Partial<{
   id: number // 订单id
   number: string // 订单号
+  pickupCode: string // 取餐码
+  deliveryType: number // 配送方式：1-配送 2-自取
   status: number // 订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
   userId: number // 下单用户id
   addressBookId: number // 地址id
@@ -18,10 +22,12 @@ export type Order = Partial<{
   payMethod: number // 支付方式 1微信，2支付宝
   payStatus: number // 支付状态 0未支付 1已支付 2退款
   amount: number // 实收金额
+  deliveryFee: number // 配送费
   remark: string // 备注
   userName: string // 用户名
   phone: string // 手机号
   address: string // 地址
+  dormitory: string // 宿舍楼号
   consignee: string // 收货人
   cancelReason: string // 订单取消原因
   rejectionReason: string // 订单拒绝原因

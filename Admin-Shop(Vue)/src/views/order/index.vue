@@ -109,7 +109,7 @@ const init = async (activeIndex: number = 0, search?: boolean) => {
   }
   try {
     const res = await getOrderDetailPageAPI(params)
-    if (res.data.code === 0) {
+    if (res.data.code === 1) {
       tableData.value = res.data.data.records
       orderStatus.value = activeIndex
       counts.value = Number(res.data.data.total)
@@ -137,7 +137,7 @@ const init = async (activeIndex: number = 0, search?: boolean) => {
 const getOrderListBy3Status = async () => {
   try {
     const res = await getOrderListByAPI()
-    if (res.data.code === 0) {
+    if (res.data.code === 1) {
       console.log('获取订单统计成功')
       orderStatics.value = res.data.data
       console.log('orderStatics:', orderStatics.value)
@@ -177,7 +177,7 @@ const orderAccept = async (row: any) => {
   dialogOrderStatus.value = row.status
   try {
     const res = await orderAcceptAPI({ id: orderId.value })
-    if (res.data.code === 0) {
+    if (res.data.code === 1) {
       console.log('操作成功')
       orderId.value = 0
       dialogVisible.value = false
@@ -226,7 +226,7 @@ const confirmCancel = async () => {
       [cancelDialogTitle.value === '取消' ? 'cancelReason' : 'rejectionReason']:
         cancelReason.value === '自定义原因' ? remark.value : cancelReason.value,
     })
-    if (res.data.code === 0) {
+    if (res.data.code === 1) {
       console.log('操作成功')
       ElMessage.success(`${cancelDialogTitle.value}成功`)
       cancelDialogVisible.value = false
@@ -246,7 +246,7 @@ const deliveryOrComplete = async (status: number, id: number) => {
   const params = { status, id }
   try {
     const res = await (status === 3 ? deliveryOrderAPI : completeOrderAPI)(params)
-    if (res.data.code === 0) {
+    if (res.data.code === 1) {
       console.log('操作成功')
       ElMessage.success(`${status === 3 ? '派送成功' : '订单完成'}`)
       orderId.value = 0
@@ -482,7 +482,7 @@ onMounted(async () => {
               <label>菜品小计</label>
               <span>￥{{ diaForm && diaForm.amount !== undefined ?
                 (diaForm!.amount - (diaForm?.packAmount || 0)).toFixed(2) : 0
-                }}</span>
+              }}</span>
             </div>
           </div>
         </div>
@@ -510,7 +510,7 @@ onMounted(async () => {
                 <span class="pay-name">支付渠道：</span>
                 <span class="pay-value">{{
                   diaForm!.payMethod === 1 ? '微信支付' : '支付宝支付'
-                  }}</span>
+                }}</span>
               </div>
               <div class="pay-time">
                 <span class="pay-name">支付时间：</span>

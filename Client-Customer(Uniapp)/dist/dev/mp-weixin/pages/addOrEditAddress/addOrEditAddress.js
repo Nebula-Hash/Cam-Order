@@ -6,238 +6,95 @@ require("../../stores/modules/user.js");
 const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "addOrEditAddress",
   setup(__props) {
-    let fullLocationCode = ["", "", ""];
-    const pickerChange = (ev) => {
-      console.log(ev);
-      address.value = ev.detail.value.join(" ");
-      console.log(address.value);
-      fullLocationCode = ev.detail.code;
-      console.log(fullLocationCode);
-      form.provinceCode = fullLocationCode[0];
-      form.cityCode = fullLocationCode[1];
-      form.districtCode = fullLocationCode[2];
-    };
-    const platform = common_vendor.ref("ios");
-    const showDel = common_vendor.ref(false);
-    const items = [
-      {
-        value: 1,
-        name: "男士"
-      },
-      {
-        value: 0,
-        name: "女士"
-      }
-    ];
-    const options = [
-      {
-        name: "公司"
-      },
-      {
-        name: "家"
-      },
-      {
-        name: "学校"
-      }
-    ];
+    const isEdit = common_vendor.ref(false);
+    const addressId = common_vendor.ref();
     const form = common_vendor.reactive({
-      id: 0,
       consignee: "",
       phone: "",
-      label: "",
-      gender: 1,
-      provinceCode: "110000",
-      provinceName: "",
-      cityCode: "110100",
-      cityName: "",
-      districtCode: "110102",
-      districtName: "",
-      detail: ""
+      dormitory: "",
+      isDefault: 0
     });
-    common_vendor.ref("");
-    const address = common_vendor.ref("北京市 市辖区 西城区");
-    const delId = common_vendor.ref();
-    common_vendor.onLoad(async (options2) => {
-      init();
-      if (options2 && options2.type === "编辑") {
-        delId.value = -1;
-        showDel.value = true;
-        common_vendor.index.setNavigationBarTitle({
-          title: "编辑收货地址"
-        });
-        delId.value = options2.id;
-        await queryAddressBookById(options2.id);
+    common_vendor.onLoad(async (options) => {
+      if (options == null ? void 0 : options.id) {
+        isEdit.value = true;
+        addressId.value = Number(options.id);
+        common_vendor.index.setNavigationBarTitle({ title: "编辑地址" });
+        await loadAddress(addressId.value);
       } else {
-        showDel.value = false;
+        common_vendor.index.setNavigationBarTitle({ title: "新增地址" });
       }
     });
-    common_vendor.onUnload(() => {
-      common_vendor.index.removeStorage({
-        key: "edit"
-      });
-    });
-    const statusBarHeight = () => {
-      return common_vendor.index.getSystemInfoSync().statusBarHeight + "px";
-    };
-    const init = () => {
-      const res = common_vendor.index.getSystemInfoSync();
-      platform.value = res.platform;
-    };
-    const queryAddressBookById = async (id) => {
+    const loadAddress = async (id) => {
       const res = await api_address.getAddressByIdAPI(id);
-      if (res.code === 0) {
-        const newForm = {
-          provinceCode: res.data.provinceCode,
-          cityCode: res.data.cityCode,
-          districtCode: res.data.districtCode,
-          phone: res.data.phone,
-          consignee: res.data.consignee,
-          gender: res.data.gender,
-          label: res.data.label,
-          detail: res.data.detail,
-          id: res.data.id
-        };
-        Object.assign(form, newForm);
-        if (res.data.provinceName && res.data.cityName && res.data.districtName) {
-          address.value = res.data.provinceName + "-" + res.data.cityName + "-" + res.data.districtName;
-        }
+      if (res.code === 1 && res.data) {
+        form.consignee = res.data.consignee || "";
+        form.phone = res.data.phone || "";
+        form.dormitory = res.data.dormitory || "";
+        form.isDefault = res.data.isDefault || 0;
       }
     };
-    const getTextOption = (item) => {
-      console.log("点击了标签", item);
-      form.label = item.name;
+    const onDefaultChange = (e) => {
+      form.isDefault = e.detail.value ? 1 : 0;
     };
-    const sexChangeHandle = (val) => {
-      form.gender = val;
-      console.log(form.gender);
-    };
-    const addAddress = async () => {
-      if (form.consignee === "") {
-        return common_vendor.index.showToast({
-          title: "联系人不能为空",
-          duration: 1e3,
-          icon: "none"
-        });
-      } else if (form.phone === "") {
-        return common_vendor.index.showToast({
-          title: "手机号不能为空",
-          duration: 1e3,
-          icon: "none"
-        });
-      } else if (form.label === "") {
-        return common_vendor.index.showToast({
-          title: "所属标签不能为空",
-          duration: 1e3,
-          icon: "none"
-        });
-      } else if (address.value === "") {
-        return common_vendor.index.showToast({
-          title: "所在地区不能为空",
-          duration: 1e3,
-          icon: "none"
-        });
+    const saveAddress = async () => {
+      var _a, _b, _c;
+      if (!((_a = form.consignee) == null ? void 0 : _a.trim())) {
+        return common_vendor.index.showToast({ title: "请输入联系人", icon: "none" });
       }
-      if (form.phone) {
-        const reg = /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/;
-        if (!reg.test(form.phone)) {
-          return common_vendor.index.showToast({
-            title: "手机号输入有误",
-            duration: 1e3,
-            icon: "none"
-          });
-        }
+      if (!((_b = form.phone) == null ? void 0 : _b.trim())) {
+        return common_vendor.index.showToast({ title: "请输入手机号", icon: "none" });
       }
-      const params = {
-        ...form,
-        provinceName: address.value.split(" ")[0],
-        cityName: address.value.split(" ")[1],
-        districtName: address.value.split(" ")[2]
-      };
-      if (showDel.value) {
-        console.log("update params !!!", params);
-        const res = await api_address.updateAddressAPI(params);
-        if (res.code === 0) {
-          common_vendor.index.redirectTo({
-            url: "/pages/address/address"
-          });
+      const phoneReg = /^1[3-9]\d{9}$/;
+      if (!phoneReg.test(form.phone)) {
+        return common_vendor.index.showToast({ title: "手机号格式不正确", icon: "none" });
+      }
+      if (!((_c = form.dormitory) == null ? void 0 : _c.trim())) {
+        return common_vendor.index.showToast({ title: "请输入地址", icon: "none" });
+      }
+      try {
+        if (isEdit.value) {
+          await api_address.updateAddressAPI({ ...form, id: addressId.value });
+        } else {
+          await api_address.addAddressAPI(form);
         }
-      } else {
-        delete params.id;
-        console.log("add params with label!", params);
-        const res = await api_address.addAddressAPI(params);
-        if (res.code === 0) {
-          common_vendor.index.redirectTo({
-            url: "/pages/address/address"
-          });
-        }
+        common_vendor.index.showToast({ title: "保存成功", icon: "success" });
+        setTimeout(() => {
+          common_vendor.index.navigateBack();
+        }, 1e3);
+      } catch (e) {
+        console.error("保存地址失败", e);
       }
     };
     const deleteAddress = async () => {
-      if (delId.value === -1 || !delId.value) {
-        return common_vendor.index.showToast({
-          title: "删除失败",
-          duration: 1e3,
-          icon: "none"
-        });
-      }
-      const res = await api_address.deleteAddressAPI(delId.value);
-      if (res.code === 0) {
-        common_vendor.index.redirectTo({
-          url: "/pages/address/address"
-        });
-        common_vendor.index.showToast({
-          title: "地址删除成功",
-          duration: 1e3,
-          icon: "none"
-        });
-        form.consignee = "";
-        form.phone = "";
-        form.label = "";
-        form.provinceCode = "110000";
-        form.cityCode = "110100";
-        form.districtCode = "110102";
-      }
+      common_vendor.index.showModal({
+        title: "提示",
+        content: "确定删除该地址吗？",
+        success: async (res) => {
+          if (res.confirm && addressId.value) {
+            await api_address.deleteAddressAPI(addressId.value);
+            common_vendor.index.showToast({ title: "删除成功", icon: "success" });
+            setTimeout(() => {
+              common_vendor.index.navigateBack();
+            }, 1e3);
+          }
+        }
+      });
     };
     return (_ctx, _cache) => {
-      var _a;
       return common_vendor.e({
         a: form.consignee,
         b: common_vendor.o(($event) => form.consignee = $event.detail.value),
-        c: common_vendor.f(items, (item, index, i0) => {
-          return common_vendor.e({
-            a: item.value != form.gender
-          }, item.value != form.gender ? {} : {}, {
-            b: common_vendor.t(item.name),
-            c: index,
-            d: common_vendor.o(($event) => sexChangeHandle(item.value), index)
-          });
-        }),
-        d: form.phone,
-        e: common_vendor.o(($event) => form.phone = $event.detail.value),
-        f: address.value
-      }, address.value ? {
-        g: common_vendor.t(address.value)
-      } : {}, {
-        h: common_vendor.o(pickerChange),
-        i: (_a = address.value) == null ? void 0 : _a.split(" "),
-        j: platform.value == "ios" ? 1 : "",
-        k: form.detail,
-        l: common_vendor.o(($event) => form.detail = $event.detail.value),
-        m: common_vendor.f(options, (item, k0, i0) => {
-          return {
-            a: common_vendor.t(item.name),
-            b: form.label === item.name ? 1 : "",
-            c: item.name,
-            d: common_vendor.o(($event) => getTextOption(item), item.name)
-          };
-        }),
-        n: common_vendor.o(($event) => addAddress()),
-        o: showDel.value
-      }, showDel.value ? {
-        p: common_vendor.o(($event) => deleteAddress())
-      } : {}, {
-        q: `calc(100% - ${statusBarHeight} - 44px)`
-      });
+        c: form.phone,
+        d: common_vendor.o(($event) => form.phone = $event.detail.value),
+        e: form.dormitory,
+        f: common_vendor.o(($event) => form.dormitory = $event.detail.value),
+        g: form.isDefault === 1,
+        h: common_vendor.o(onDefaultChange),
+        i: common_vendor.o(saveAddress),
+        j: isEdit.value
+      }, isEdit.value ? {
+        k: common_vendor.o(deleteAddress)
+      } : {});
     };
   }
 });

@@ -19,10 +19,10 @@ public interface OrderMapper {
     /**
      * 新增订单
      */
-    @Insert("INSERT INTO orders (number, pickup_code, status, user_id, address_book_id, consignee, phone, dormitory, " +
-            "order_time, pay_method, pay_status, amount, remark) VALUES " +
-            "(#{number}, #{pickupCode}, #{status}, #{userId}, #{addressBookId}, #{consignee}, #{phone}, #{dormitory}, " +
-            "#{orderTime}, #{payMethod}, #{payStatus}, #{amount}, #{remark})")
+    @Insert("INSERT INTO orders (number, pickup_code, delivery_type, status, user_id, address_book_id, consignee, phone, dormitory, " +
+            "order_time, pay_method, pay_status, amount, delivery_fee, remark) VALUES " +
+            "(#{number}, #{pickupCode}, #{deliveryType}, #{status}, #{userId}, #{addressBookId}, #{consignee}, #{phone}, #{dormitory}, " +
+            "#{orderTime}, #{payMethod}, #{payStatus}, #{amount}, #{deliveryFee}, #{remark})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     void insert(Order order);
 

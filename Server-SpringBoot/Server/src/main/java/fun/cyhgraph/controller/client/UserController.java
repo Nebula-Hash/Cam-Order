@@ -1,6 +1,7 @@
 package fun.cyhgraph.controller.client;
 
 import fun.cyhgraph.constant.JwtClaimsConstant;
+import fun.cyhgraph.context.BaseContext;
 import fun.cyhgraph.dto.UserDTO;
 import fun.cyhgraph.dto.UserLoginDTO;
 import fun.cyhgraph.entity.User;
@@ -13,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -80,6 +82,20 @@ public class UserController {
     public Result update(@RequestBody UserDTO userDTO){
         log.info("新的用户信息：{}", userDTO);
         userService.update(userDTO);
+        return Result.success();
+    }
+
+    /**
+     * 用户充值
+     * @param params
+     * @return
+     */
+    @PostMapping("/recharge")
+    public Result recharge(@RequestBody Map<String, Object> params){
+        BigDecimal amount = new BigDecimal(params.get("amount").toString());
+        log.info("用户充值金额：{}", amount);
+        Integer userId = BaseContext.getCurrentId();
+        userService.recharge(userId, amount);
         return Result.success();
     }
 

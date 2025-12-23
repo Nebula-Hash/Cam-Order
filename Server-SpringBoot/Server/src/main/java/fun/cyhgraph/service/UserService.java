@@ -4,6 +4,8 @@ import fun.cyhgraph.dto.UserDTO;
 import fun.cyhgraph.dto.UserLoginDTO;
 import fun.cyhgraph.entity.User;
 
+import java.math.BigDecimal;
+
 public interface UserService {
     User login(UserLoginDTO userLoginDTO);
 
@@ -12,4 +14,6 @@ public interface UserService {
     User getUser(Integer id);
 
     void update(UserDTO userDTO);
+
+    void recharge(Integer userId, BigDecimal amount);
 }

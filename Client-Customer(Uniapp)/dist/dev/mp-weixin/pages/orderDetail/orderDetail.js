@@ -141,11 +141,15 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     return (_ctx, _cache) => {
       return common_vendor.e({
         a: common_vendor.t(statusList[order.status].name),
-        b: order.status === 1
+        b: order.deliveryType === 2 && order.pickupCode
+      }, order.deliveryType === 2 && order.pickupCode ? {
+        c: common_vendor.t(order.pickupCode)
+      } : {}, {
+        d: order.status === 1
       }, order.status === 1 ? common_vendor.e({
-        c: common_vendor.unref(countdownStore).showM <= 0 && common_vendor.unref(countdownStore).showS <= 0
+        e: common_vendor.unref(countdownStore).showM <= 0 && common_vendor.unref(countdownStore).showS <= 0
       }, common_vendor.unref(countdownStore).showM <= 0 && common_vendor.unref(countdownStore).showS <= 0 ? {} : {
-        d: common_vendor.p({
+        f: common_vendor.p({
           color: "#888",
           ["show-day"]: false,
           ["show-hour"]: false,
@@ -153,23 +157,23 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           second: common_vendor.unref(countdownStore).showS
         })
       }) : {}, {
-        e: order.status <= 2
+        g: order.status <= 2
       }, order.status <= 2 ? {
-        f: common_vendor.o(cancelOrder)
+        h: common_vendor.o(cancelOrder)
       } : {}, {
-        g: order.status === 1 && (common_vendor.unref(countdownStore).showM > 0 || common_vendor.unref(countdownStore).showS > 0)
+        i: order.status === 1 && (common_vendor.unref(countdownStore).showM > 0 || common_vendor.unref(countdownStore).showS > 0)
       }, order.status === 1 && (common_vendor.unref(countdownStore).showM > 0 || common_vendor.unref(countdownStore).showS > 0) ? {
-        h: common_vendor.o(toPay)
+        j: common_vendor.o(toPay)
       } : {}, {
-        i: order.status === 2
+        k: order.status === 2
       }, order.status === 2 ? {
-        j: common_vendor.o(pushOrder)
+        l: common_vendor.o(pushOrder)
       } : {}, {
-        k: order.status === 2 || order.status === 6
+        m: order.status === 2 || order.status === 6
       }, order.status === 2 || order.status === 6 ? {
-        l: common_vendor.o(reOrder)
+        n: common_vendor.o(reOrder)
       } : {}, {
-        m: common_vendor.f(order.orderDetailList, (obj, index, i0) => {
+        o: common_vendor.f(order.orderDetailList, (obj, index, i0) => {
           return common_vendor.e({
             a: obj.pic,
             b: common_vendor.t(obj.name),
@@ -185,16 +189,22 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             h: index
           });
         }),
-        n: common_vendor.t(order.packAmount),
-        o: common_vendor.t(order.amount),
-        p: common_vendor.o(connectShop),
-        q: common_vendor.t(order.remark),
-        r: common_vendor.t(order.tablewareNumber == -1 ? "无需餐具" : order.tablewareNumber == 0 ? "商家根据餐量提供" : order.tablewareNumber),
-        s: common_vendor.t(order.number),
-        t: common_vendor.t(order.orderTime),
-        v: common_vendor.t(order.address),
-        w: common_vendor.t(order.packAmount === -1 ? "无需餐具" : order.packAmount === 0 ? "按餐量提供" : order.packAmount),
-        x: common_vendor.sr(childComp, "2d945b00-1", {
+        p: common_vendor.t(order.packAmount),
+        q: common_vendor.t(order.deliveryType === 2 ? "免费（自取）" : "￥" + (order.deliveryFee || 6)),
+        r: order.deliveryType === 2 ? 1 : "",
+        s: common_vendor.t(order.amount),
+        t: common_vendor.o(connectShop),
+        v: common_vendor.t(order.remark),
+        w: common_vendor.t(order.tablewareNumber == -1 ? "无需餐具" : order.tablewareNumber == 0 ? "商家根据餐量提供" : order.tablewareNumber),
+        x: common_vendor.t(order.number),
+        y: common_vendor.t(order.deliveryType === 2 ? "自取" : "配送"),
+        z: common_vendor.t(order.orderTime),
+        A: order.deliveryType === 1
+      }, order.deliveryType === 1 ? {
+        B: common_vendor.t(order.dormitory || order.address)
+      } : {}, {
+        C: common_vendor.t(order.packAmount === -1 ? "无需餐具" : order.packAmount === 0 ? "按餐量提供" : order.packAmount),
+        D: common_vendor.sr(childComp, "2d945b00-1", {
           "k": "childComp"
         })
       });

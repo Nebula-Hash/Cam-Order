@@ -10,5 +10,6 @@ public class CartDTO implements Serializable {
     private Integer dishId;
     private Integer setmealId;
     private String dishFlavor;
+    private Integer windowId;
 
 }

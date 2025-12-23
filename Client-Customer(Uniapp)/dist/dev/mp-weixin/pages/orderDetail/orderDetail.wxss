@@ -10,6 +10,29 @@
   font-weight: bold;
   text-align: center;
 }
+.white_box .pickup_code_box.data-v-2d945b00 {
+  background: linear-gradient(135deg, #00aaff, #0088cc);
+  margin: 20rpx 30rpx;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  text-align: center;
+}
+.white_box .pickup_code_box .pickup_code_label.data-v-2d945b00 {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 10rpx;
+}
+.white_box .pickup_code_box .pickup_code_value.data-v-2d945b00 {
+  font-size: 72rpx;
+  font-weight: bold;
+  color: #fff;
+  letter-spacing: 16rpx;
+}
+.white_box .pickup_code_box .pickup_code_tips.data-v-2d945b00 {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 10rpx;
+}
 .white_box .time_box.data-v-2d945b00 {
   padding: 20rpx 0;
   font-size: 24rpx;
@@ -146,6 +169,9 @@
   line-height: 44rpx;
   letter-spacing: 0px;
   padding-right: 20rpx;
+}
+.white_box .word_text .free_fee.data-v-2d945b00 {
+  color: #52c41a;
 }
 .white_box .all_price.data-v-2d945b00 {
   position: relative;
